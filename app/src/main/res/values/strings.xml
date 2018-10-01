@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">YourTime</string>
+    <string name="hi">HI !!!</string>
+    <string name="day_la_ten">Day la ten</string>
+    <string name="day_la_email">Day la email</string>
+    <string name="log_out">Log Out</string>
 </resources>

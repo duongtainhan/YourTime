@@ -6,17 +6,84 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/txtEmail"
-        android:layout_centerInParent="true"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnLogOut"
-        android:text="Log Out"
-        android:layout_below="@id/txtEmail"
-        android:layout_centerHorizontal="true"/>
+        android:id="@+id/relativeUser">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtEmail"
+            android:textSize="@dimen/_12ssp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_toStartOf="@dimen/_10sdp"
+            android:text="@string/day_la_email"
+            android:layout_below="@id/txtName"
+            android:layout_toEndOf="@id/imgAvatar"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtName"
+            android:textSize="@dimen/_20ssp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:text="@string/day_la_ten"
+            android:textStyle="bold"
+            android:layout_toEndOf="@id/imgAvatar"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnLogOut"
+            android:text="@string/log_out"
+            android:layout_below="@id/txtEmail"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_toEndOf="@id/imgAvatar"/>
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="@dimen/_100sdp"
+            android:id="@+id/imgAvatar"
+            android:src="@drawable/ic_launcher_background"
+            android:layout_alignParentTop="true"
+            android:layout_margin="@dimen/_10sdp" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/relativeUser">
+        <ImageView
+            android:layout_width="@dimen/_110sdp"
+            android:layout_height="@dimen/_110sdp"
+            android:src="@drawable/ic_start"
+            android:id="@+id/imgStart"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:layout_centerHorizontal="true"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imgStart"
+            android:id="@+id/relative1"
+            android:layout_centerHorizontal="true">
+            <ImageView
+                android:layout_width="@dimen/_110sdp"
+                android:layout_height="@dimen/_110sdp"
+                android:layout_marginEnd="@dimen/_30sdp"
+                android:src="@drawable/ic_settime"
+                android:id="@+id/imgSetTime" />
+            <ImageView
+                android:layout_width="@dimen/_110sdp"
+                android:layout_height="@dimen/_110sdp"
+                android:src="@drawable/ic_settings"
+                android:layout_marginStart="@dimen/_30sdp"
+                android:layout_toEndOf="@id/imgSetTime"/>
+        </RelativeLayout>
+        <ImageView
+            android:layout_width="@dimen/_110sdp"
+            android:layout_height="@dimen/_110sdp"
+            android:src="@drawable/ic_route"
+            android:layout_below="@id/relative1"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>
