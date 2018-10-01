@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     {
         btnLog = findViewById(R.id.btnLogOut);
         txtEmail = findViewById(R.id.txtEmail);
+
     }
 
     @Override
