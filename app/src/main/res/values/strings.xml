@@ -4,4 +4,7 @@
     <string name="day_la_ten">Day la ten</string>
     <string name="day_la_email">Day la email</string>
     <string name="log_out">Log Out</string>
+    <string name="report">Report</string>
+    <string name="set_time">Set Time</string>
+    <string name="setting">Setting</string>
 </resources>
