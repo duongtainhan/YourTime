@@ -3,10 +3,7 @@ package com.example.duongtainhan555.yourtime.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +16,6 @@ public class SetTimeFragment extends Fragment {
 
     View view;
     private CalendarView calendarView;
-    private TabLayout tabLayout;
-    private FragmentManager fragmentManager;
-    private FragmentTransaction fragmentTransaction;
     private NewEventFragment newEventFragment;
     private CreatedEventsFragment createdEventsFragment;
 
@@ -38,7 +32,6 @@ public class SetTimeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         //Event
         EventCalendar();
-        EventTabLayout();
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -52,35 +45,9 @@ public class SetTimeFragment extends Fragment {
         });
     }
 
-    private void EventTabLayout() {
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                fragmentTransaction = fragmentManager.beginTransaction();
-                if (tab.getPosition() == 1) {
-
-                } else {
-                }
-                //fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-    }
 
     private void InitView() {
         calendarView = view.findViewById(R.id.calendar);
-        tabLayout = view.findViewById(R.id.tabLayout);
-        fragmentManager = getFragmentManager();
         newEventFragment = new NewEventFragment();
         createdEventsFragment = new CreatedEventsFragment();
     }
