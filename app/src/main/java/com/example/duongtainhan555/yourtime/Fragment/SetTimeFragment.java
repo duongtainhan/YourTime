@@ -58,10 +58,8 @@ public class SetTimeFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 fragmentTransaction = fragmentManager.beginTransaction();
                 if (tab.getPosition() == 1) {
-                    fragmentTransaction.replace(R.id.viewScroll,newEventFragment);
 
                 } else {
-                    fragmentTransaction.replace(R.id.viewScroll,createdEventsFragment);
                 }
                 //fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
