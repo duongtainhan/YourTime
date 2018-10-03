@@ -7,4 +7,13 @@
     <string name="report">Report</string>
     <string name="set_time">Set Time</string>
     <string name="setting">Setting</string>
+    <string name="date_time">3 December, 2018</string>
+    <string name="events_created">Created Events</string>
+    <string name="create_new_event">Create New Event</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
+    <string name="note">Note</string>
+    <string name="create">CREATE</string>
+    <string name="_3_october_2018">3 October 2018</string>
+    <string name="schedule">schedule</string>
 </resources>

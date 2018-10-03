@@ -1,4 +1,4 @@
-package com.example.duongtainhan555.yourtime;
+package com.example.duongtainhan555.yourtime.Activity;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -10,10 +10,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.duongtainhan555.yourtime.R;
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;

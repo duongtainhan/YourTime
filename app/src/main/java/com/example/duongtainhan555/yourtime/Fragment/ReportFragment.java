@@ -1,4 +1,4 @@
-package com.example.duongtainhan555.yourtime;
+package com.example.duongtainhan555.yourtime.Fragment;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.duongtainhan555.yourtime.R;
 
 public class ReportFragment extends Fragment {
     View view;

@@ -1,10 +1,16 @@
-package com.example.duongtainhan555.yourtime;
+package com.example.duongtainhan555.yourtime.Activity;
 
 import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.duongtainhan555.yourtime.Adapter.PagerAdapter;
+import com.example.duongtainhan555.yourtime.R;
+import com.example.duongtainhan555.yourtime.Fragment.ReportFragment;
+import com.example.duongtainhan555.yourtime.Fragment.SetTimeFragment;
+import com.example.duongtainhan555.yourtime.Fragment.SettingFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private TabItem tabSetting;
     private ViewPager viewPager;
     private PagerAdapter pagerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         InitViewPager();
 
     }
-
     private void Init() {
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
@@ -35,15 +41,16 @@ public class MainActivity extends AppCompatActivity {
     private void InitViewPager()
     {
         pagerAdapter = new PagerAdapter(getSupportFragmentManager(),tabLayout.getTabCount());
+        pagerAdapter.InitFragment(new ReportFragment(), new SetTimeFragment(), new SettingFragment());
         viewPager.setAdapter(pagerAdapter);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
                 if (tab.getPosition() == 1) {
-                    //select report tabitem
 
                 } else if (tab.getPosition() == 2) {
+
 
                 } else {
 

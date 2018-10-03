@@ -1,4 +1,4 @@
-package com.example.duongtainhan555.yourtime;
+package com.example.duongtainhan555.yourtime.Fragment;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,12 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class SetTimeFragment extends Fragment {
+import com.example.duongtainhan555.yourtime.R;
+
+public class NewEventFragment extends Fragment {
     View view;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_settime,container,false);
+        view = inflater.inflate(R.layout.fragment_new_event,container,false);
         return view;
     }
 }

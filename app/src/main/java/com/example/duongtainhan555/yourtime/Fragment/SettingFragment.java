@@ -1,4 +1,4 @@
-package com.example.duongtainhan555.yourtime;
+package com.example.duongtainhan555.yourtime.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.duongtainhan555.yourtime.Activity.LoginActivity;
+import com.example.duongtainhan555.yourtime.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -109,10 +111,14 @@ public class SettingFragment extends Fragment implements GoogleApiClient.OnConne
     @Override
     public void onStart() {
         super.onStart();
-
         firebaseAuth.addAuthStateListener(firebaseAuthListener);
     }
-
+    @Override
+    public void onPause() {
+        super.onPause();
+        googleApiClient.stopAutoManage(Objects.requireNonNull(getActivity()));
+        googleApiClient.disconnect();
+    }
     @Override
     public void onStop() {
         super.onStop();
