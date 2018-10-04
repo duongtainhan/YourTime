@@ -96,7 +96,7 @@ public class SetTimeFragment extends Fragment {
             idUser = firebaseUser.getUid();
     }
 
-    private void InsertData(ScheduleItem scheduleItem) {
+    private void SetData(ScheduleItem scheduleItem) {
 
         Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
@@ -108,6 +108,32 @@ public class SetTimeFragment extends Fragment {
 
         db.collection(idUser).document(scheduleItem.getDate())
                 .set(docData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("AAA", "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("AAA", "Error writing document", e);
+                    }
+                });
+
+    }
+    private void InsertData(ScheduleItem scheduleItem) {
+
+        Map<String, Object> docData = new HashMap<>();
+        Map<String, String> nestedData = new HashMap<>();
+        nestedData.put("EndTime", scheduleItem.getTimeEnd());
+        nestedData.put("Note", scheduleItem.getNote());
+        nestedData.put("Status", scheduleItem.getStatus());
+
+        docData.put(scheduleItem.getTimeStart(), nestedData);
+
+        db.collection(idUser).document(scheduleItem.getDate())
+                .update(docData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
