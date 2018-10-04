@@ -3,11 +3,13 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="background_blue">#b6ddf4</color>
-    <color name="color_title">#117bc7</color>
-    <color name="color_text">#233c54</color>
-    <color name="color_dim_text">#b6babe</color>
-    <color name="color_white">#ffffff</color>
-    <color name="color_bg_dialog">#c63461</color>
-    <color name="color_create">#a3cbf9</color>
+    //Material color
+    <color name="material_background_blue">#eaeffa</color>
+    <color name="material_selected_tab">#e9f0fd</color>
+    <color name="material_dim_text">#606368</color>
+    <color name="material_white">#f8fafe</color>
+    <color name="material_title">#5285ec</color>
+    <color name="material_background_orange">#f6c544</color>
+    <color name="material_text">#101010</color>
+    <color name="material_background">#fafafa</color>
 </resources>

@@ -39,7 +39,7 @@ public class SettingFragment extends Fragment implements GoogleApiClient.OnConne
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_setting,container,false);
+        view = inflater.inflate(R.layout.fragment_setting, container, false);
         //InitView
         InitView();
         //InitGoogleApi
@@ -54,29 +54,28 @@ public class SettingFragment extends Fragment implements GoogleApiClient.OnConne
 
         return view;
     }
-    private void InitView()
-    {
+
+    private void InitView() {
         imgAvatar = view.findViewById(R.id.imgAvatar);
         txtName = view.findViewById(R.id.txtName);
         txtEmail = view.findViewById(R.id.txtEmail);
         btnLogout = view.findViewById(R.id.btnLogOut);
     }
-    private void InitGoogleApi()
-    {
+
+    private void InitGoogleApi() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
         googleApiClient = new GoogleApiClient.Builder(Objects.requireNonNull(getContext()))
-                .enableAutoManage(Objects.requireNonNull(getActivity()),this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
+                .enableAutoManage(Objects.requireNonNull(getActivity()), this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user != null )
-                {
+                if (user != null) {
                     SetUserData(user);
                 }
             }
@@ -87,15 +86,15 @@ public class SettingFragment extends Fragment implements GoogleApiClient.OnConne
         txtName.setText(user.getDisplayName());
         txtEmail.setText(user.getEmail());
         Picasso.get().load(user.getPhotoUrl()).into(imgAvatar);
+
     }
-    private void LogOut()
-    {
+
+    private void LogOut() {
         firebaseAuth.signOut();
         Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(@NonNull Status status) {
-                if(status.isSuccess())
-                {
+                if (status.isSuccess()) {
                     LogInScreen();
                 }
             }
@@ -103,7 +102,7 @@ public class SettingFragment extends Fragment implements GoogleApiClient.OnConne
     }
 
     private void LogInScreen() {
-        Intent intent = new Intent(getActivity(),LoginActivity.class);
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
@@ -113,18 +112,19 @@ public class SettingFragment extends Fragment implements GoogleApiClient.OnConne
         super.onStart();
         firebaseAuth.addAuthStateListener(firebaseAuthListener);
     }
+
     @Override
     public void onPause() {
         super.onPause();
         googleApiClient.stopAutoManage(Objects.requireNonNull(getActivity()));
         googleApiClient.disconnect();
     }
+
     @Override
     public void onStop() {
         super.onStop();
 
-        if(firebaseAuthListener != null)
-        {
+        if (firebaseAuthListener != null) {
             firebaseAuth.removeAuthStateListener(firebaseAuthListener);
         }
     }

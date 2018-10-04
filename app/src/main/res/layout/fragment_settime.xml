@@ -4,9 +4,36 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_marginEnd="@dimen/_14sdp"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/txtDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="@string/_3_october_2018"
+                    android:textColor="@color/material_title"
+                    android:textSize="@dimen/_23sdp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+    </android.support.v7.widget.Toolbar>
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolBar">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -14,51 +41,46 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/cardViewCalendar"
-                android:layout_width="@dimen/_300sdp"
-                android:layout_height="@dimen/_240sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_margin="@dimen/_5sdp">
+                android:layout_marginStart="@dimen/_14sdp"
+                android:layout_marginEnd="@dimen/_14sdp"
+                android:layout_marginBottom="@dimen/_5sdp">
 
                 <CalendarView
                     android:id="@+id/calendar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_5sdp" />
+                    android:layout_height="wrap_content" />
             </android.support.v7.widget.CardView>
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/cardViewCalendar">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:text="@string/_3_october_2018"
-                        android:textSize="@dimen/_23sdp"
-                        android:textStyle="bold" />
-                </RelativeLayout>
-            </android.support.v7.widget.Toolbar>
-
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/toolBar" />
+                android:layout_below="@id/cardViewCalendar" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recyclerView"
+                android:orientation="vertical">
+
+            </LinearLayout>
         </RelativeLayout>
     </ScrollView>
 
     <android.support.design.widget.FloatingActionButton
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="@dimen/_300sdp"
         android:layout_height="@dimen/_300sdp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/_10sdp"
+        app:backgroundTint="@color/material_background_orange"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:fabSize="normal"
         android:layout_marginBottom="@dimen/_10sdp"
-        android:src="@drawable/ic_settime" />
+        android:id="@+id/floatingButton"
+        android:src="@drawable/ic_add" />
 </RelativeLayout>

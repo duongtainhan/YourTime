@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.MainActivity">
+    tools:context=".Activity.MainActivity"
+    android:background="@color/material_background">
 
     <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
@@ -15,14 +16,15 @@
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_blue"
+        android:background="@color/material_background_blue"
         app:tabGravity="fill"
-        app:tabIndicatorColor="@color/color_title"
-        app:tabIndicatorHeight="@dimen/_6sdp"
+        app:tabIndicatorColor="@color/material_title"
+        app:tabIndicatorHeight="@dimen/_3sdp"
+        app:tabIndicator="@color/material_selected_tab"
         app:tabMode="fixed"
         android:layout_alignParentBottom="true"
-        app:tabSelectedTextColor="@color/color_text"
-        app:tabTextColor="@color/color_dim_text">
+        app:tabSelectedTextColor="@color/material_title"
+        app:tabTextColor="@color/material_dim_text">
 
         <android.support.design.widget.TabItem
             android:id="@+id/tabReport"
