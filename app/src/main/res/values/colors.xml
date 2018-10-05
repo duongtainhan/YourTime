@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimary">#cb666d</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     //Material color
-    <color name="material_background_blue">#eaeffa</color>
-    <color name="material_selected_tab">#e9f0fd</color>
+    <color name="material_background_blue">#e9f0fd</color>
+    <color name="material_background_blue_2">#cbddfd</color>
+    <color name="material_selected_tab">#e0e9fa</color>
     <color name="material_dim_text">#606368</color>
     <color name="material_white">#f8fafe</color>
     <color name="material_title">#5285ec</color>

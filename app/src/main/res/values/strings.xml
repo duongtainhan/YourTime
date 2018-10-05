@@ -16,4 +16,10 @@
     <string name="create">CREATE</string>
     <string name="_3_october_2018">3 October 2018</string>
     <string name="schedule">schedule</string>
+    <string name="error">ERROR</string>
+    <string name="please_complete_all_information">Please complete all information</string>
+    <string name="ok">OK</string>
+    <string name="time_is_not_suitable">Time is not suitable</string>
+    <string name="successfully_written">Successfully written!</string>
+    <string name="error_writing_data">Error writing data</string>
 </resources>
