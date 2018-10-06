@@ -67,15 +67,13 @@ public class SetTimeFragment extends Fragment {
     private CalendarView calendarView;
     private FloatingActionButton floatingActionButton;
     private Dialog dialog;
-    private LinearLayout linearCreate;
     private TextView txtDate;
     private Calendar calendar;
     private TextView txtDateDialog;
-    private LinearLayout linearStartTime;
-    private LinearLayout linearEndTime;
+    private Button btnCreate;
     private TextView txtTimeStart;
-    private TextView txtTimeEnd;
     private FirebaseFirestore db;
+    private LinearLayout linearStartTime;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private String idUser;
@@ -86,7 +84,6 @@ public class SetTimeFragment extends Fragment {
     private EditText edNote;
     private Dialog dialogNotif;
     private Dialog dialogWritten;
-    private StatusFirebase statusFirebase;
     private RecyclerView recyclerView;
     private TextView txtNoSchedule;
 
@@ -135,13 +132,13 @@ public class SetTimeFragment extends Fragment {
             public void onClick(View v) {
                 dialog = new Dialog(Objects.requireNonNull(getContext()));
                 dialog.setContentView(R.layout.dialog_set_time);
-                linearCreate = dialog.findViewById(R.id.linearCreate);
+                linearStartTime = dialog.findViewById(R.id.linearStartTime);
                 txtDateDialog = dialog.findViewById(R.id.txtDateDialog);
                 //set text header Date
                 txtDateDialog.setText(txtDate.getText());
                 //
                 txtTimeStart = dialog.findViewById(R.id.txtTimeStart);
-                linearStartTime = dialog.findViewById(R.id.linearStartTime);
+                btnCreate = dialog.findViewById(R.id.btnCreate);
                 edNote = dialog.findViewById(R.id.edNote);
                 //event click item in dialog
                 EventClickLinear();
@@ -360,7 +357,7 @@ public class SetTimeFragment extends Fragment {
     }
 
     private void EventCreateEvent() {
-        linearCreate.setOnClickListener(new View.OnClickListener() {
+        btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createNewScheduleItem.setNote(edNote.getText().toString());
@@ -386,6 +383,7 @@ public class SetTimeFragment extends Fragment {
     private void GetData() {
         arrCreatedData = new ArrayList<>();
         final DocumentReference docRef = db.collection(idUser).document(dateMemory);
+
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @SuppressLint("SetTextI18n")
             @Override
@@ -415,12 +413,18 @@ public class SetTimeFragment extends Fragment {
                         dataItem.setDate(dateMemory);
                         arrCreatedData.add(dataItem);
                     }
-                    Collections.sort(arrCreatedData);
-                    ScheduleAdapter scheduleAdapter = new ScheduleAdapter(arrCreatedData, getContext());
-                    GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
-                    recyclerView.setLayoutManager(layoutManager);
-                    recyclerView.setItemAnimator(new DefaultItemAnimator());
-                    recyclerView.setAdapter(scheduleAdapter);
+                    if(arrCreatedData.isEmpty())
+                    {
+                        recyclerView.setVisibility(View.INVISIBLE);
+                        txtNoSchedule.setVisibility(View.VISIBLE);
+                    }else {
+                        Collections.sort(arrCreatedData);
+                        ScheduleAdapter scheduleAdapter = new ScheduleAdapter(arrCreatedData, getContext());
+                        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
+                        recyclerView.setLayoutManager(layoutManager);
+                        recyclerView.setItemAnimator(new DefaultItemAnimator());
+                        recyclerView.setAdapter(scheduleAdapter);
+                    }
 
                 } else {
                     recyclerView.setVisibility(View.INVISIBLE);

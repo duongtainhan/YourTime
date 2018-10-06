@@ -2,22 +2,29 @@ package com.example.duongtainhan555.yourtime.Adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.support.v7.widget.PopupMenu;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.duongtainhan555.yourtime.Interface.SendStatus;
@@ -25,11 +32,17 @@ import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
 import com.example.duongtainhan555.yourtime.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +52,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     private List<DataItem> dataItems;
     private Context context;
     private Dialog dialogDelete;
+    private Dialog dialogUpdate;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public ScheduleAdapter(List<DataItem> dataItems, Context context) {
@@ -71,12 +85,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.itemUpdate) {
-                            Toast.makeText(context, "Update", Toast.LENGTH_SHORT).show();
+                            ShowDialogUpdate(dataItem);
                         } else if (item.getItemId() == R.id.itemDelete) {
-                            String id = dataItem.getIdUser();
-                            String date = dataItem.getDate();
-                            String time = dataItem.getScheduleItem().getTimeStart();
-                            ShowDialogDelete(id,date,time);
+                            ShowDialogDelete(dataItem);
                         }
                         return true;
                     }
@@ -88,12 +99,126 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             }
         });
     }
-    private void ShowDialogDelete(final String id, final String date, final String time)
+    private void ShowTimePicker(final TextView textView) {
+        final Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int min = calendar.get(Calendar.MINUTE);
+        TimePickerDialog timePickerDialog = new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                Calendar calendarTime = Calendar.getInstance();
+                calendarTime.set(0, 0, 0, hourOfDay, minute);
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
+                String time = formatTime.format(calendarTime.getTime());
+                textView.setText(time);
+            }
+        }, hour, min, true);
+        timePickerDialog.show();
+    }
+    private String CheckLogic(DataItem dataItem, String startTime, String note) throws ParseException {
+        String date = dataItem.getDate();
+        String error = null;
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("dd-MM-yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
+        Calendar calendar = Calendar.getInstance();
+        Date calendarFormatDate = formatDate.parse(formatDate.format(calendar.getTime()));
+        Date calendarFormatTime = formatTime.parse(formatTime.format(calendar.getTime()));
+        if (note.isEmpty()) {
+            error = "Note is empty";
+        } else if (startTime == null) {
+            error = "Start time is empty";
+        } else if (formatDate.parse(date).before(calendarFormatDate)) {
+            error = "Date must not be earlier current date";
+        } else if (formatDate.parse(date).equals(calendarFormatDate)) {
+            if (calendarFormatTime.after(formatTime.parse(startTime))) {
+                error = "Start time must be later than current time";
+            }
+        }
+        return error;
+    }
+    private void UpdateData(DataItem dataItem, String startTime, String note)
+    {
+        Map<String, Object> docData = new HashMap<>();
+        Map<String, String> nestedData = new HashMap<>();
+        nestedData.put("Note", note);
+        nestedData.put("Status", "Not Ready");
+
+        docData.put(startTime, nestedData);
+
+        db.collection(dataItem.getIdUser()).document(dataItem.getDate())
+                .update(docData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("AAA", "Error writing document", e);
+                    }
+                });
+    }
+    private void ShowDialogUpdate(final DataItem dataItem)
+    {
+        dialogUpdate = new Dialog(context);
+        dialogUpdate.setContentView(R.layout.dialog_update);
+        Objects.requireNonNull(dialogUpdate.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Button btnUpdate = dialogUpdate.findViewById(R.id.btnUpdate);
+        LinearLayout linearStartTime = dialogUpdate.findViewById(R.id.linearStartTimeUpdate);
+        final TextView txtStartTime = dialogUpdate.findViewById(R.id.txtStartTimeUpdate);
+        final EditText edNoteUpdate = dialogUpdate.findViewById(R.id.edNoteUpdate);
+        dialogUpdate.show();
+        //Event
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    String error = CheckLogic(dataItem,txtStartTime.getText().toString(),edNoteUpdate.getText().toString());
+                    if(error==null)
+                    {
+                        DeleteData(dataItem);
+                        UpdateData(dataItem,txtStartTime.getText().toString(),edNoteUpdate.getText().toString());
+                        dialogUpdate.cancel();
+                    }
+                    else
+                    {
+                        final Dialog dialog = new Dialog(context);
+                        dialog.setContentView(R.layout.dialog_error_time);
+                        TextView txtNotif = dialog.findViewById(R.id.txtNotif);
+                        Button btnOk = dialog.findViewById(R.id.btnOk);
+                        txtNotif.setText(error);
+                        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialog.show();
+                        //Event
+                        btnOk.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.cancel();
+                            }
+                        });
+
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        linearStartTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowTimePicker(txtStartTime);
+            }
+        });
+    }
+    private void ShowDialogDelete(final DataItem dataItem)
     {
         dialogDelete = new Dialog(context);
         dialogDelete.setContentView(R.layout.dialog_delete);
         Button btnCancel= dialogDelete.findViewById(R.id.btnCancel);
         Button btnDelete = dialogDelete.findViewById(R.id.btnDelete);
+        Objects.requireNonNull(dialogDelete.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialogDelete.show();
         //Event
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -105,16 +230,20 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DocumentReference docRef = db.collection(id).document(date);
-                Map<String,Object> updates = new HashMap<>();
-                updates.put(time, FieldValue.delete());
-
-                docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                    }
-                });
+                DeleteData(dataItem);
                 dialogDelete.cancel();
+            }
+        });
+    }
+    private void DeleteData(DataItem dataItem)
+    {
+        DocumentReference docRef = db.collection(dataItem.getIdUser()).document(dataItem.getDate());
+        Map<String,Object> updates = new HashMap<>();
+        updates.put(dataItem.getScheduleItem().getTimeStart(), FieldValue.delete());
+
+        docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
             }
         });
     }
