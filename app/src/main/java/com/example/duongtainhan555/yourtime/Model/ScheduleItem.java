@@ -1,19 +1,11 @@
 package com.example.duongtainhan555.yourtime.Model;
 
 public class ScheduleItem {
-    private String date;
+
     private String timeStart;
     private String timeEnd;
     private String note;
     private String status;
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
 
     public String getTimeStart() {
         return timeStart;

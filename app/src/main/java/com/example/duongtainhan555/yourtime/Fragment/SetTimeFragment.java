@@ -7,13 +7,13 @@ import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +25,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
+import com.example.duongtainhan555.yourtime.Adapter.ScheduleAdapter;
 import com.example.duongtainhan555.yourtime.Interface.StatusFirebase;
+import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
 import com.example.duongtainhan555.yourtime.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,15 +39,21 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static android.content.ContentValues.TAG;
 
 public class SetTimeFragment extends Fragment {
 
@@ -66,12 +73,15 @@ public class SetTimeFragment extends Fragment {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private String idUser;
-    private ScheduleItem newSchedule;
+    private DataItem createNewData;
+    private ScheduleItem createNewScheduleItem;
+    private List<ScheduleItem> arrCreatedSchedule;
     private String dateMemory;
     private EditText edNote;
     private Dialog dialogNotif;
     private Dialog dialogWritten;
     private StatusFirebase statusFirebase;
+    private RecyclerView recyclerView;
 
     @Nullable
     @Override
@@ -98,107 +108,15 @@ public class SetTimeFragment extends Fragment {
         txtDate = view.findViewById(R.id.txtDate);
         SetDate(0, 0, 0);
         db = FirebaseFirestore.getInstance();
+        recyclerView = view.findViewById(R.id.recyclerView);
     }
-
     private void GetIdUser() {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser != null)
-            idUser = firebaseUser.getUid();
+            idUser=firebaseUser.getUid();
     }
 
-    private void SetData(ScheduleItem scheduleItem) {
-
-        Map<String, Object> docData = new HashMap<>();
-        Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("EndTime", scheduleItem.getTimeEnd());
-        nestedData.put("Note", scheduleItem.getNote());
-        nestedData.put("Status", scheduleItem.getStatus());
-
-        docData.put(scheduleItem.getTimeStart(), nestedData);
-
-        db.collection(idUser).document(scheduleItem.getDate())
-                .set(docData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("AAA", "Error writing document", e);
-
-                    }
-                });
-    }
-
-    private void UpdateData(ScheduleItem scheduleItem) {
-
-        Map<String, Object> docData = new HashMap<>();
-        Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("EndTime", scheduleItem.getTimeEnd());
-        nestedData.put("Note", scheduleItem.getNote());
-        nestedData.put("Status", scheduleItem.getStatus());
-
-        docData.put(scheduleItem.getTimeStart(), nestedData);
-
-        db.collection(idUser).document(scheduleItem.getDate())
-                .update(docData)
-                .addOnSuccessListener( new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("AAA", "Error writing document", e);
-                    }
-                });
-
-    }
-
-    private void InsertData(final ScheduleItem scheduleItem) {
-        String date = scheduleItem.getDate();
-        DocumentReference docRef = db.collection(idUser).document(date);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        UpdateData(scheduleItem);
-                    } else {
-                        SetData(scheduleItem);
-                    }
-                } else {
-                    Log.d("CHECK", "get failed with ", task.getException());
-                }
-            }
-        });
-    }
-
-    private void EventCalendar() {
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                SetDate(year, month, dayOfMonth);
-            }
-        });
-    }
-
-    private void SetDate(int year, int month, int dayOfMonth) {
-        calendar = Calendar.getInstance();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("d MMMM yyyy");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-        if (year != 0) {
-            calendar.set(year, month, dayOfMonth);
-        }
-        String date = formatDate.format(calendar.getTime());
-        dateMemory = format.format(calendar.getTime());
-        txtDate.setText(date);
-    }
 
     private void EventFloatingButton() {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -223,8 +141,11 @@ public class SetTimeFragment extends Fragment {
                 //
                 Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
-                newSchedule = new ScheduleItem();
-                newSchedule.setDate(dateMemory);
+                createNewData = new DataItem();
+                createNewScheduleItem = new ScheduleItem();
+                createNewData.setIdUser(idUser);
+                createNewData.setScheduleItem(createNewScheduleItem);
+                createNewData.setDate(dateMemory);
                 EventCreateEvent();
             }
         });
@@ -246,11 +167,107 @@ public class SetTimeFragment extends Fragment {
         });
     }
 
-    private String CheckLogic(ScheduleItem scheduleItem) throws ParseException {
-        String startTime = scheduleItem.getTimeStart();
-        String endTime = scheduleItem.getTimeEnd();
-        String date = scheduleItem.getDate();
-        String note = scheduleItem.getNote();
+
+
+    private void EventShowDatePicker() {
+        Calendar calendar = Calendar.getInstance();
+        final int year = calendar.get(Calendar.YEAR);
+        final int month = calendar.get(Calendar.MONTH);
+        final int date = calendar.get(Calendar.DATE);
+        txtDateDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        Calendar calendar1 = Calendar.getInstance();
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("d MMMM yyyy");
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+                        if (year != 0) {
+                            calendar1.set(year, month, dayOfMonth);
+                        }
+                        String date = formatDate.format(calendar1.getTime());
+                        createNewData.setDate(format.format(calendar1.getTime()));
+                        txtDateDialog.setText(date);
+                    }
+                }, year, month, date);
+                datePickerDialog.show();
+            }
+        });
+    }
+
+    private void EventClickLinear() {
+        linearStartTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InitTimePicker(txtTimeStart, true);
+            }
+        });
+        linearEndTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InitTimePicker(txtTimeEnd, false);
+            }
+        });
+    }
+    private void SetDate(int year, int month, int dayOfMonth) {
+        calendar = Calendar.getInstance();
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("d MMMM yyyy");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+        if (year != 0) {
+            calendar.set(year, month, dayOfMonth);
+        }
+        String date = formatDate.format(calendar.getTime());
+        dateMemory = format.format(calendar.getTime());
+        txtDate.setText(date);
+    }
+    private void EventCalendar() {
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                SetDate(year, month, dayOfMonth);
+                GetIdUser();
+                GetData();
+            }
+        });
+    }
+
+    private void InitTimePicker(final TextView textView, final boolean b) {
+        final Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int min = calendar.get(Calendar.MINUTE);
+        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                Calendar calendarTime = Calendar.getInstance();
+                calendarTime.set(0, 0, 0, hourOfDay, minute);
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
+                String time = formatTime.format(calendarTime.getTime());
+                if (b) {
+                    createNewScheduleItem.setTimeStart(time);
+                } else {
+                    createNewScheduleItem.setTimeEnd(time);
+                }
+                textView.setText(time);
+            }
+        }, hour, min, true);
+        timePickerDialog.show();
+    }
+
+
+
+    private void ShowDialogWritten()
+    {
+        dialogWritten = new Dialog(Objects.requireNonNull(getContext()));
+        dialogWritten.setContentView(R.layout.dialog_written);
+        dialogWritten.show();
+    }
+    //CheckLogic
+    private String CheckLogic(DataItem dataItem) throws ParseException {
+        String startTime = dataItem.getScheduleItem().getTimeStart();
+        String endTime = dataItem.getScheduleItem().getTimeEnd();
+        String date = dataItem.getDate();
+        String note = dataItem.getScheduleItem().getNote();
         String error = null;
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("dd-MM-yyyy");
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
@@ -278,82 +295,90 @@ public class SetTimeFragment extends Fragment {
         }
         return error;
     }
+    //Region Function: Create New Schedule
 
-    private void EventShowDatePicker() {
-        Calendar calendar = Calendar.getInstance();
-        final int year = calendar.get(Calendar.YEAR);
-        final int month = calendar.get(Calendar.MONTH);
-        final int date = calendar.get(Calendar.DATE);
-        txtDateDialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+
+    private void SetData(DataItem dataItem) {
+
+        Map<String, Object> docData = new HashMap<>();
+        Map<String, String> nestedData = new HashMap<>();
+        nestedData.put("EndTime", dataItem.getScheduleItem().getTimeEnd());
+        nestedData.put("Note", dataItem.getScheduleItem().getNote());
+        nestedData.put("Status", dataItem.getScheduleItem().getStatus());
+
+        docData.put(dataItem.getScheduleItem().getTimeStart(), nestedData);
+
+        db.collection(dataItem.getIdUser()).document(dataItem.getDate())
+                .set(docData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        Calendar calendar1 = Calendar.getInstance();
-                        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("d MMMM yyyy");
-                        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-                        if (year != 0) {
-                            calendar1.set(year, month, dayOfMonth);
-                        }
-                        String date = formatDate.format(calendar1.getTime());
-                        newSchedule.setDate(format.format(calendar1.getTime()));
-                        txtDateDialog.setText(date);
+                    public void onSuccess(Void aVoid) {
                     }
-                }, year, month, date);
-                datePickerDialog.show();
-            }
-        });
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("AAA", "Error writing document", e);
+
+                    }
+                });
     }
 
-    private void EventClickLinear() {
-        linearStartTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InitTimePicker(txtTimeStart, true);
-            }
-        });
-        linearEndTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InitTimePicker(txtTimeEnd, false);
-            }
-        });
+    private void UpdateData(DataItem dataItem) {
+
+        Map<String, Object> docData = new HashMap<>();
+        Map<String, String> nestedData = new HashMap<>();
+        nestedData.put("EndTime", dataItem.getScheduleItem().getTimeEnd());
+        nestedData.put("Note", dataItem.getScheduleItem().getNote());
+        nestedData.put("Status", dataItem.getScheduleItem().getStatus());
+
+        docData.put(dataItem.getScheduleItem().getTimeStart(), nestedData);
+
+        db.collection(dataItem.getIdUser()).document(dataItem.getDate())
+                .update(docData)
+                .addOnSuccessListener( new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("AAA", "Error writing document", e);
+                    }
+                });
+
     }
 
-    private void InitTimePicker(final TextView textView, final boolean b) {
-        final Calendar calendar = Calendar.getInstance();
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int min = calendar.get(Calendar.MINUTE);
-        TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+    private void InsertData(final DataItem dataItem) {
+        String date = dataItem.getDate();
+        DocumentReference docRef = db.collection(idUser).document(date);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                Calendar calendarTime = Calendar.getInstance();
-                calendarTime.set(0, 0, 0, hourOfDay, minute);
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
-                String time = formatTime.format(calendarTime.getTime());
-                if (b) {
-                    newSchedule.setTimeStart(time);
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        UpdateData(dataItem);
+                    } else {
+                        SetData(dataItem);
+                    }
                 } else {
-                    newSchedule.setTimeEnd(time);
+                    Log.d("CHECK", "get failed with ", task.getException());
                 }
-                textView.setText(time);
             }
-        }, hour, min, true);
-        timePickerDialog.show();
+        });
     }
-
     private void EventCreateEvent() {
         linearCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                newSchedule.setNote(edNote.getText().toString());
-                Log.d("AAA", "note" + newSchedule.getNote());
+                createNewScheduleItem.setNote(edNote.getText().toString());
                 try {
-                    String checkLogic = CheckLogic(newSchedule);
+                    String checkLogic = CheckLogic(createNewData);
                     if (checkLogic == null) {
-                        newSchedule.setStatus("Not Ready");
-                        InsertData(newSchedule);
+                        createNewScheduleItem.setStatus("Not Ready");
+                        InsertData(createNewData);
                         dialog.cancel();
                     } else {
                         ShowDialogError(checkLogic);
@@ -365,11 +390,43 @@ public class SetTimeFragment extends Fragment {
         });
 
     }
-
-    private void ShowDialogWritten()
+    //EndRegion
+    //Realtime
+    private void GetData()
     {
-        dialogWritten = new Dialog(Objects.requireNonNull(getContext()));
-        dialogWritten.setContentView(R.layout.dialog_written);
-        dialogWritten.show();
+        arrCreatedSchedule = new ArrayList<>();
+        final DocumentReference docRef = db.collection(idUser).document(dateMemory);
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    arrCreatedSchedule.clear();
+                    Log.d(TAG, "Current data: " + snapshot.getData());
+                    for (Map.Entry<String, Object> entry : Objects.requireNonNull(snapshot.getData()).entrySet()) {
+                        ScheduleItem scheduleItem = new ScheduleItem();
+                        scheduleItem.setTimeStart(entry.getKey());
+                        Map<String, String> nestedData = (Map<String, String>) entry.getValue();
+                        scheduleItem.setTimeEnd(nestedData.get("EndTime"));
+                        scheduleItem.setNote(nestedData.get("Note"));
+                        scheduleItem.setStatus(nestedData.get("Status"));
+                        arrCreatedSchedule.add(scheduleItem);
+                    }
+                    ScheduleAdapter scheduleAdapter = new ScheduleAdapter(arrCreatedSchedule,getContext());
+                    GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
+                    recyclerView.setLayoutManager(layoutManager);
+                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    recyclerView.setAdapter(scheduleAdapter);
+
+                } else {
+                    Log.d(TAG, "Current data: null");
+                }
+            }
+        });
     }
 }

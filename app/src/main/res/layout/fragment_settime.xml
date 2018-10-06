@@ -12,6 +12,10 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_marginEnd="@dimen/_14sdp"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            app:cardElevation="@dimen/_3sdp"
+            app:cardCornerRadius="@dimen/_10sdp"
+            android:background="@color/material_white"
             android:layout_height="wrap_content">
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -41,10 +45,13 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/cardViewCalendar"
+                android:background="@color/material_white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="@dimen/_14sdp"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                app:cardElevation="@dimen/_3sdp"
                 android:layout_marginEnd="@dimen/_14sdp"
                 android:layout_marginBottom="@dimen/_5sdp">
 
