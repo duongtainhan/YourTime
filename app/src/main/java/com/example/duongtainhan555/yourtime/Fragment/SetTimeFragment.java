@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.duongtainhan555.yourtime.Adapter.ScheduleAdapter;
+import com.example.duongtainhan555.yourtime.Interface.SendStatus;
 import com.example.duongtainhan555.yourtime.Interface.StatusFirebase;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
@@ -40,6 +41,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
@@ -79,7 +81,7 @@ public class SetTimeFragment extends Fragment {
     private String idUser;
     private DataItem createNewData;
     private ScheduleItem createNewScheduleItem;
-    private List<ScheduleItem> arrCreatedSchedule;
+    private List<DataItem> arrCreatedData;
     private String dateMemory;
     private EditText edNote;
     private Dialog dialogNotif;
@@ -382,7 +384,7 @@ public class SetTimeFragment extends Fragment {
     //EndRegion
     //Realtime
     private void GetData() {
-        arrCreatedSchedule = new ArrayList<>();
+        arrCreatedData = new ArrayList<>();
         final DocumentReference docRef = db.collection(idUser).document(dateMemory);
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @SuppressLint("SetTextI18n")
@@ -399,18 +401,22 @@ public class SetTimeFragment extends Fragment {
                 if (snapshot != null && snapshot.exists()) {
                     recyclerView.setVisibility(View.VISIBLE);
                     txtNoSchedule.setVisibility(View.INVISIBLE);
-                    arrCreatedSchedule.clear();
+                    arrCreatedData.clear();
                     Log.d(TAG, "Current data: " + snapshot.getData());
                     for (Map.Entry<String, Object> entry : Objects.requireNonNull(snapshot.getData()).entrySet()) {
+                        DataItem dataItem = new DataItem();
                         ScheduleItem scheduleItem = new ScheduleItem();
                         scheduleItem.setTimeStart(entry.getKey());
                         Map<String, String> nestedData = (Map<String, String>) entry.getValue();
                         scheduleItem.setNote(nestedData.get("Note"));
                         scheduleItem.setStatus(nestedData.get("Status"));
-                        arrCreatedSchedule.add(scheduleItem);
+                        dataItem.setScheduleItem(scheduleItem);
+                        dataItem.setIdUser(idUser);
+                        dataItem.setDate(dateMemory);
+                        arrCreatedData.add(dataItem);
                     }
-                    Collections.sort(arrCreatedSchedule);
-                    ScheduleAdapter scheduleAdapter = new ScheduleAdapter(arrCreatedSchedule, getContext());
+                    Collections.sort(arrCreatedData);
+                    ScheduleAdapter scheduleAdapter = new ScheduleAdapter(arrCreatedData, getContext());
                     GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
                     recyclerView.setLayoutManager(layoutManager);
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -424,5 +430,4 @@ public class SetTimeFragment extends Fragment {
             }
         });
     }
-
 }

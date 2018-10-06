@@ -31,4 +31,6 @@
     <string name="not_ready">Not Ready</string>
     <string name="day_la_ghi_chu">Day la ghi chu</string>
     <string name="edit">Edit</string>
+    <string name="are_you_sure">Are you sure you wanted delete this schedule?</string>
+    <string name="cancel">Cancel</string>
 </resources>

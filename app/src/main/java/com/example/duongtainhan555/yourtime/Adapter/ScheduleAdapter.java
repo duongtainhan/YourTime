@@ -1,7 +1,9 @@
 package com.example.duongtainhan555.yourtime.Adapter;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuPopupHelper;
@@ -12,22 +14,35 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.support.v7.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.duongtainhan555.yourtime.Interface.SendStatus;
+import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
 import com.example.duongtainhan555.yourtime.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
-    private List<ScheduleItem> scheduleItems;
+    private List<DataItem> dataItems;
     private Context context;
+    private Dialog dialogDelete;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public ScheduleAdapter(List<ScheduleItem> scheduleItems, Context context) {
-        this.scheduleItems = scheduleItems;
+    public ScheduleAdapter(List<DataItem> dataItems, Context context) {
+        this.dataItems = dataItems;
         this.context = context;
     }
 
@@ -42,10 +57,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
-        ScheduleItem scheduleItem = scheduleItems.get(i);
-        viewHolder.txtStartTime.setText(scheduleItem.getTimeStart());
-        viewHolder.txtNote.setText(scheduleItem.getNote());
-        viewHolder.txtStatus.setText(scheduleItem.getStatus());
+        final DataItem dataItem = dataItems.get(i);
+        viewHolder.txtStartTime.setText(dataItem.getScheduleItem().getTimeStart());
+        viewHolder.txtNote.setText(dataItem.getScheduleItem().getNote());
+        viewHolder.txtStatus.setText(dataItem.getScheduleItem().getStatus());
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("RestrictedApi")
             @Override
@@ -58,7 +73,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         if (item.getItemId() == R.id.itemUpdate) {
                             Toast.makeText(context, "Update", Toast.LENGTH_SHORT).show();
                         } else if (item.getItemId() == R.id.itemDelete) {
-                            Toast.makeText(context, "Delete", Toast.LENGTH_SHORT).show();
+                            String id = dataItem.getIdUser();
+                            String date = dataItem.getDate();
+                            String time = dataItem.getScheduleItem().getTimeStart();
+                            ShowDialogDelete(id,date,time);
                         }
                         return true;
                     }
@@ -70,10 +88,40 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             }
         });
     }
+    private void ShowDialogDelete(final String id, final String date, final String time)
+    {
+        dialogDelete = new Dialog(context);
+        dialogDelete.setContentView(R.layout.dialog_delete);
+        Button btnCancel= dialogDelete.findViewById(R.id.btnCancel);
+        Button btnDelete = dialogDelete.findViewById(R.id.btnDelete);
+        dialogDelete.show();
+        //Event
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogDelete.cancel();
+            }
+        });
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DocumentReference docRef = db.collection(id).document(date);
+                Map<String,Object> updates = new HashMap<>();
+                updates.put(time, FieldValue.delete());
+
+                docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                    }
+                });
+                dialogDelete.cancel();
+            }
+        });
+    }
 
     @Override
     public int getItemCount() {
-        return scheduleItems.size();
+        return dataItems.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
