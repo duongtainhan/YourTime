@@ -25,4 +25,9 @@
     <string name="_23_30">23:30</string>
     <string name="hyphen">-</string>
     <string name="_23_45">23:45</string>
+    <string name="delete">Delete</string>
+    <string name="update">Update</string>
+    <string name="no_schedule">No Schedule</string>
+    <string name="not_ready">Not Ready</string>
+    <string name="day_la_ghi_chu">Day la ghi chu</string>
 </resources>

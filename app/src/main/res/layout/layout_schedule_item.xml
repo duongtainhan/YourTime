@@ -26,31 +26,20 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/txtStartSchedule"
-                android:text="@string/hyphen"
-                android:id="@+id/txtHyphen"
-                android:textSize="@dimen/_23ssp"
+                android:text="@string/not_ready"
                 android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:textStyle="bold"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/_23_45"
-                android:id="@+id/txtEndSchedule"
-                android:layout_toEndOf="@id/txtHyphen"
-                android:textSize="@dimen/_23ssp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:textStyle="bold"/>
+                android:layout_marginStart="@dimen/_10sdp"
+                android:id="@+id/txtStatusSchedule"
+                android:textSize="@dimen/_12ssp"
+                android:layout_below="@id/txtStartSchedule"/>
             <TextView
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/txtNoteSchedule"
-                android:layout_below="@id/txtStartSchedule"
-                android:text="Day la ghi chu"
+                android:layout_below="@id/txtStatusSchedule"
+                android:text="@string/day_la_ghi_chu"
                 android:textSize="@dimen/_12ssp"
                 android:layout_marginBottom="@dimen/_10sdp"/>
             <ImageView

@@ -43,10 +43,14 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +86,7 @@ public class SetTimeFragment extends Fragment {
     private Dialog dialogWritten;
     private StatusFirebase statusFirebase;
     private RecyclerView recyclerView;
+    private TextView txtNoSchedule;
 
     @Nullable
     @Override
@@ -90,7 +95,6 @@ public class SetTimeFragment extends Fragment {
 
         //Init View
         InitView();
-        GetIdUser();
         return view;
     }
 
@@ -103,18 +107,23 @@ public class SetTimeFragment extends Fragment {
     }
 
     private void InitView() {
+
         calendarView = view.findViewById(R.id.calendar);
         floatingActionButton = view.findViewById(R.id.floatingButton);
         txtDate = view.findViewById(R.id.txtDate);
         SetDate(0, 0, 0);
         db = FirebaseFirestore.getInstance();
         recyclerView = view.findViewById(R.id.recyclerView);
+        txtNoSchedule = view.findViewById(R.id.txtNoSchedule);
+        GetIdUser();
+        GetData();
     }
+
     private void GetIdUser() {
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser != null)
-            idUser=firebaseUser.getUid();
+            idUser = firebaseUser.getUid();
     }
 
 
@@ -130,9 +139,7 @@ public class SetTimeFragment extends Fragment {
                 txtDateDialog.setText(txtDate.getText());
                 //
                 txtTimeStart = dialog.findViewById(R.id.txtTimeStart);
-                txtTimeEnd = dialog.findViewById(R.id.txtTimeEnd);
                 linearStartTime = dialog.findViewById(R.id.linearStartTime);
-                linearEndTime = dialog.findViewById(R.id.linearEndTime);
                 edNote = dialog.findViewById(R.id.edNote);
                 //event click item in dialog
                 EventClickLinear();
@@ -168,7 +175,6 @@ public class SetTimeFragment extends Fragment {
     }
 
 
-
     private void EventShowDatePicker() {
         Calendar calendar = Calendar.getInstance();
         final int year = calendar.get(Calendar.YEAR);
@@ -200,27 +206,24 @@ public class SetTimeFragment extends Fragment {
         linearStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InitTimePicker(txtTimeStart, true);
-            }
-        });
-        linearEndTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                InitTimePicker(txtTimeEnd, false);
+                InitTimePicker(txtTimeStart);
             }
         });
     }
+
     private void SetDate(int year, int month, int dayOfMonth) {
         calendar = Calendar.getInstance();
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("d MMMM yyyy");
         @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
         if (year != 0) {
             calendar.set(year, month, dayOfMonth);
+            dateMemory = format.format(calendar.getTime());
         }
         String date = formatDate.format(calendar.getTime());
         dateMemory = format.format(calendar.getTime());
         txtDate.setText(date);
     }
+
     private void EventCalendar() {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -232,7 +235,7 @@ public class SetTimeFragment extends Fragment {
         });
     }
 
-    private void InitTimePicker(final TextView textView, final boolean b) {
+    private void InitTimePicker(final TextView textView) {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int min = calendar.get(Calendar.MINUTE);
@@ -243,11 +246,7 @@ public class SetTimeFragment extends Fragment {
                 calendarTime.set(0, 0, 0, hourOfDay, minute);
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
                 String time = formatTime.format(calendarTime.getTime());
-                if (b) {
-                    createNewScheduleItem.setTimeStart(time);
-                } else {
-                    createNewScheduleItem.setTimeEnd(time);
-                }
+                createNewScheduleItem.setTimeStart(time);
                 textView.setText(time);
             }
         }, hour, min, true);
@@ -255,17 +254,15 @@ public class SetTimeFragment extends Fragment {
     }
 
 
-
-    private void ShowDialogWritten()
-    {
+    private void ShowDialogWritten() {
         dialogWritten = new Dialog(Objects.requireNonNull(getContext()));
         dialogWritten.setContentView(R.layout.dialog_written);
         dialogWritten.show();
     }
+
     //CheckLogic
     private String CheckLogic(DataItem dataItem) throws ParseException {
         String startTime = dataItem.getScheduleItem().getTimeStart();
-        String endTime = dataItem.getScheduleItem().getTimeEnd();
         String date = dataItem.getDate();
         String note = dataItem.getScheduleItem().getNote();
         String error = null;
@@ -278,19 +275,11 @@ public class SetTimeFragment extends Fragment {
             error = "Note is empty";
         } else if (startTime == null) {
             error = "Start time is empty";
-        } else if (endTime == null) {
-            error = "End time is empty";
         } else if (formatDate.parse(date).before(calendarFormatDate)) {
             error = "Date must not be earlier current date";
         } else if (formatDate.parse(date).equals(calendarFormatDate)) {
             if (calendarFormatTime.after(formatTime.parse(startTime))) {
                 error = "Start time must be later than current time";
-            } else if (formatTime.parse(startTime).after(formatTime.parse(endTime))) {
-                error = "Start time must be earlier than end time";
-            }
-        } else if (formatDate.parse(date).equals(calendarFormatDate)) {
-            if (formatTime.parse(startTime).after(formatTime.parse(endTime))) {
-                error = "Start time must be earlier than end time";
             }
         }
         return error;
@@ -302,7 +291,6 @@ public class SetTimeFragment extends Fragment {
 
         Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("EndTime", dataItem.getScheduleItem().getTimeEnd());
         nestedData.put("Note", dataItem.getScheduleItem().getNote());
         nestedData.put("Status", dataItem.getScheduleItem().getStatus());
 
@@ -328,7 +316,6 @@ public class SetTimeFragment extends Fragment {
 
         Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("EndTime", dataItem.getScheduleItem().getTimeEnd());
         nestedData.put("Note", dataItem.getScheduleItem().getNote());
         nestedData.put("Status", dataItem.getScheduleItem().getStatus());
 
@@ -336,7 +323,7 @@ public class SetTimeFragment extends Fragment {
 
         db.collection(dataItem.getIdUser()).document(dataItem.getDate())
                 .update(docData)
-                .addOnSuccessListener( new OnSuccessListener<Void>() {
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                     }
@@ -369,6 +356,7 @@ public class SetTimeFragment extends Fragment {
             }
         });
     }
+
     private void EventCreateEvent() {
         linearCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -390,43 +378,51 @@ public class SetTimeFragment extends Fragment {
         });
 
     }
+
     //EndRegion
     //Realtime
-    private void GetData()
-    {
+    private void GetData() {
         arrCreatedSchedule = new ArrayList<>();
         final DocumentReference docRef = db.collection(idUser).document(dateMemory);
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot,
                                 @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
+                    recyclerView.setVisibility(View.INVISIBLE);
+                    txtNoSchedule.setVisibility(View.VISIBLE);
+                    txtNoSchedule.setText("ERROR");
                     return;
                 }
 
                 if (snapshot != null && snapshot.exists()) {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    txtNoSchedule.setVisibility(View.INVISIBLE);
                     arrCreatedSchedule.clear();
                     Log.d(TAG, "Current data: " + snapshot.getData());
                     for (Map.Entry<String, Object> entry : Objects.requireNonNull(snapshot.getData()).entrySet()) {
                         ScheduleItem scheduleItem = new ScheduleItem();
                         scheduleItem.setTimeStart(entry.getKey());
                         Map<String, String> nestedData = (Map<String, String>) entry.getValue();
-                        scheduleItem.setTimeEnd(nestedData.get("EndTime"));
                         scheduleItem.setNote(nestedData.get("Note"));
                         scheduleItem.setStatus(nestedData.get("Status"));
                         arrCreatedSchedule.add(scheduleItem);
                     }
-                    ScheduleAdapter scheduleAdapter = new ScheduleAdapter(arrCreatedSchedule,getContext());
+                    Collections.sort(arrCreatedSchedule);
+                    ScheduleAdapter scheduleAdapter = new ScheduleAdapter(arrCreatedSchedule, getContext());
                     GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
                     recyclerView.setLayoutManager(layoutManager);
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
                     recyclerView.setAdapter(scheduleAdapter);
 
                 } else {
-                    Log.d(TAG, "Current data: null");
+                    recyclerView.setVisibility(View.INVISIBLE);
+                    txtNoSchedule.setVisibility(View.VISIBLE);
                 }
+
             }
         });
     }
+
 }
