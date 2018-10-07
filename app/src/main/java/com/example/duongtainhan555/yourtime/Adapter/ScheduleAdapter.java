@@ -150,6 +150,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         final TextView txtStartTime = dialogUpdate.findViewById(R.id.txtStartTimeUpdate);
         final EditText edNoteUpdate = dialogUpdate.findViewById(R.id.edNoteUpdate);
         dialogUpdate.setCanceledOnTouchOutside(false);
+        txtStartTime.setText(dataItem.getScheduleItem().getTimeStart());
+        edNoteUpdate.setText(dataItem.getScheduleItem().getNote());
         dialogUpdate.show();
         //Event
         btnUpdate.setOnClickListener(new View.OnClickListener() {
