@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/material_white"
+    android:background="@drawable/background_custom"
     android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="@dimen/_200sdp"
         android:layout_height="wrap_content"
-        android:background="@color/material_title">
+        android:background="@drawable/background_custom_err">
 
         <LinearLayout
             android:layout_width="@dimen/_200sdp"
@@ -19,7 +19,7 @@
             <ImageView
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
-                android:src="@drawable/ic_ok_dialog" />
+                android:src="@drawable/ic_error_dialog" />
 
         </LinearLayout>
     </RelativeLayout>
@@ -29,14 +29,15 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/txtStatusError"
             android:layout_marginTop="@dimen/_30sdp"
             android:layout_marginBottom="@dimen/_30sdp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="@string/successfully_written"
-            android:textColor="@color/material_title"
-            android:textSize="@dimen/_15sdp" />
+            android:text="@string/error_writing_data"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/_18sdp" />
     </RelativeLayout>
 
 </LinearLayout>

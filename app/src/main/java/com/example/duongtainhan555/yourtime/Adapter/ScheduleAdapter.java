@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuPopupHelper;
@@ -99,6 +100,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             }
         });
     }
+
     private void ShowTimePicker(final TextView textView) {
         final Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -115,6 +117,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }, hour, min, true);
         timePickerDialog.show();
     }
+
     private String CheckLogic(DataItem dataItem, String startTime, String note) throws ParseException {
         String date = dataItem.getDate();
         String error = null;
@@ -136,53 +139,29 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
         return error;
     }
-    private void UpdateData(DataItem dataItem, String startTime, String note)
-    {
-        Map<String, Object> docData = new HashMap<>();
-        Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("Note", note);
-        nestedData.put("Status", "Not Ready");
 
-        docData.put(startTime, nestedData);
-
-        db.collection(dataItem.getIdUser()).document(dataItem.getDate())
-                .update(docData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("AAA", "Error writing document", e);
-                    }
-                });
-    }
-    private void ShowDialogUpdate(final DataItem dataItem)
-    {
+    private void ShowDialogUpdate(final DataItem dataItem) {
         dialogUpdate = new Dialog(context);
         dialogUpdate.setContentView(R.layout.dialog_update);
         Objects.requireNonNull(dialogUpdate.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         Button btnUpdate = dialogUpdate.findViewById(R.id.btnUpdate);
+        Button btnCancel = dialogUpdate.findViewById(R.id.btnCancelUpdate);
         LinearLayout linearStartTime = dialogUpdate.findViewById(R.id.linearStartTimeUpdate);
         final TextView txtStartTime = dialogUpdate.findViewById(R.id.txtStartTimeUpdate);
         final EditText edNoteUpdate = dialogUpdate.findViewById(R.id.edNoteUpdate);
+        dialogUpdate.setCanceledOnTouchOutside(false);
         dialogUpdate.show();
         //Event
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    String error = CheckLogic(dataItem,txtStartTime.getText().toString(),edNoteUpdate.getText().toString());
-                    if(error==null)
-                    {
-                        DeleteData(dataItem);
-                        UpdateData(dataItem,txtStartTime.getText().toString(),edNoteUpdate.getText().toString());
+                    String error = CheckLogic(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString());
+                    if (error == null) {
+                        DeleteData(dataItem,1);
+                        UpdateData(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString());
                         dialogUpdate.cancel();
-                    }
-                    else
-                    {
+                    } else {
                         final Dialog dialog = new Dialog(context);
                         dialog.setContentView(R.layout.dialog_error_time);
                         TextView txtNotif = dialog.findViewById(R.id.txtNotif);
@@ -197,12 +176,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                                 dialog.cancel();
                             }
                         });
-
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
             }
         });
         linearStartTime.setOnClickListener(new View.OnClickListener() {
@@ -211,14 +188,21 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 ShowTimePicker(txtStartTime);
             }
         });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogUpdate.cancel();
+            }
+        });
     }
-    private void ShowDialogDelete(final DataItem dataItem)
-    {
+
+    private void ShowDialogDelete(final DataItem dataItem) {
         dialogDelete = new Dialog(context);
         dialogDelete.setContentView(R.layout.dialog_delete);
-        Button btnCancel= dialogDelete.findViewById(R.id.btnCancel);
+        Button btnCancel = dialogDelete.findViewById(R.id.btnCancel);
         Button btnDelete = dialogDelete.findViewById(R.id.btnDelete);
         Objects.requireNonNull(dialogDelete.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogDelete.setCanceledOnTouchOutside(false);
         dialogDelete.show();
         //Event
         btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -230,22 +214,75 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DeleteData(dataItem);
+                DeleteData(dataItem,0);
                 dialogDelete.cancel();
             }
         });
     }
-    private void DeleteData(DataItem dataItem)
-    {
+
+    private void ShowDialogStatus(int dialog, int textView, int status, int count) {
+        count++;
+        if(count == 1)
+        {
+            final Dialog dialogStatus = new Dialog(context);
+            dialogStatus.setContentView(dialog);
+            dialogStatus.setCanceledOnTouchOutside(false);
+            Objects.requireNonNull(dialogStatus.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            TextView txtStatus = dialogStatus.findViewById(textView);
+            dialogStatus.setCanceledOnTouchOutside(false);
+            txtStatus.setText(status);
+            dialogStatus.show();
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dialogStatus.cancel();
+                }
+            }, 500);
+        }
+    }
+
+    private void UpdateData(DataItem dataItem, String startTime, String note) {
+        final Map<String, Object> docData = new HashMap<>();
+        Map<String, String> nestedData = new HashMap<>();
+        nestedData.put("Note", note);
+        nestedData.put("Status", "Not Ready");
+
+        docData.put(startTime, nestedData);
+
+        db.collection(dataItem.getIdUser()).document(dataItem.getDate())
+                .update(docData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_update,0);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_update,0);
+                    }
+                });
+    }
+
+    private void DeleteData(DataItem dataItem, final int count) {
         DocumentReference docRef = db.collection(dataItem.getIdUser()).document(dataItem.getDate());
-        Map<String,Object> updates = new HashMap<>();
+        Map<String, Object> updates = new HashMap<>();
         updates.put(dataItem.getScheduleItem().getTimeStart(), FieldValue.delete());
 
         docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+                ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_delete,count);
             }
-        });
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_delete,count);
+                    }
+                });
     }
 
     @Override

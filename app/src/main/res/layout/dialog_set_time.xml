@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/_14sdp"
+    android:paddingBottom="@dimen/_20sdp"
     android:background="@drawable/background_custom_notif">
 
     <RelativeLayout
@@ -69,7 +69,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="00:53"
+                            android:text="@string/_00_00"
                             android:id="@+id/txtTimeStart"
                             android:textSize="@dimen/_15sdp" />
                     </LinearLayout>
@@ -115,10 +115,19 @@
         <Button
             android:id="@+id/btnCreate"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="35dp"
             android:background="@drawable/custom_button_ok"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/ok"
+            android:textColor="#ffffffff" />
+        <Button
+            android:id="@+id/btnCancelCreate"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:background="@drawable/custom_button_ok"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="@string/cancel"
             android:textColor="#ffffffff" />
     </LinearLayout>
 </RelativeLayout>

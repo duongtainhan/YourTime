@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/background_custom"
+    android:paddingBottom="@dimen/_5sdp"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -50,7 +51,7 @@
             <Button
                 android:id="@+id/btnDelete"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_height="35dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginBottom="20dp"
@@ -60,10 +61,10 @@
                 android:textColor="#ffffffff" />
             <Button
                 android:id="@+id/btnCancel"
-                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginStart="@dimen/_25sdp"
                 android:layout_toEndOf="@id/btnDelete"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_height="35dp"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginBottom="20dp"

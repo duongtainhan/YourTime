@@ -31,7 +31,14 @@
     <string name="not_ready">Not Ready</string>
     <string name="day_la_ghi_chu">Day la ghi chu</string>
     <string name="edit">Edit</string>
-    <string name="are_you_sure">Are you sure you wanted delete this schedule?</string>
+    <string name="are_you_sure">Are you sure you want to delete this schedule?</string>
     <string name="cancel">Cancel</string>
     <string name="_00_53">00:53</string>
+    <string name="status_success_written">Successfully written!</string>
+    <string name="status_error_write">Error writing data</string>
+    <string name="status_success_update">Successfully updated!</string>
+    <string name="status_error_update">Error updating data</string>
+    <string name="status_success_delete">Successfully deleted!</string>
+    <string name="status_error_delete">Error deleting data</string>
+    <string name="_00_00">00:00</string>
 </resources>

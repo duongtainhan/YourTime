@@ -7,6 +7,7 @@ import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -25,10 +26,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.example.duongtainhan555.yourtime.Adapter.ScheduleAdapter;
-import com.example.duongtainhan555.yourtime.Interface.SendStatus;
-import com.example.duongtainhan555.yourtime.Interface.StatusFirebase;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
 import com.example.duongtainhan555.yourtime.R;
@@ -41,18 +41,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -83,9 +79,9 @@ public class SetTimeFragment extends Fragment {
     private String dateMemory;
     private EditText edNote;
     private Dialog dialogNotif;
-    private Dialog dialogWritten;
     private RecyclerView recyclerView;
     private TextView txtNoSchedule;
+    private Button btnCancel;
 
     @Nullable
     @Override
@@ -140,12 +136,16 @@ public class SetTimeFragment extends Fragment {
                 txtTimeStart = dialog.findViewById(R.id.txtTimeStart);
                 btnCreate = dialog.findViewById(R.id.btnCreate);
                 edNote = dialog.findViewById(R.id.edNote);
+                btnCancel = dialog.findViewById(R.id.btnCancelCreate);
                 //event click item in dialog
                 EventClickLinear();
                 //event click txtDateDialod --> show Date Picker Dialod
                 EventShowDatePicker();
+                //event click btnCancel
+                EventClickCancel();
                 //
                 Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
                 createNewData = new DataItem();
                 createNewScheduleItem = new ScheduleItem();
@@ -156,12 +156,21 @@ public class SetTimeFragment extends Fragment {
             }
         });
     }
-
+    private void EventClickCancel()
+    {
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+            }
+        });
+    }
     private void ShowDialogError(String text) {
         dialogNotif = new Dialog(Objects.requireNonNull(getContext()));
         dialogNotif.setContentView(R.layout.dialog_error_time);
         TextView txtNotif = dialogNotif.findViewById(R.id.txtNotif);
         txtNotif.setText(text);
+        dialogNotif.setCanceledOnTouchOutside(false);
         Objects.requireNonNull(dialogNotif.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialogNotif.show();
         Button btnOk = dialogNotif.findViewById(R.id.btnOk);
@@ -252,13 +261,6 @@ public class SetTimeFragment extends Fragment {
         timePickerDialog.show();
     }
 
-
-    private void ShowDialogWritten() {
-        dialogWritten = new Dialog(Objects.requireNonNull(getContext()));
-        dialogWritten.setContentView(R.layout.dialog_written);
-        dialogWritten.show();
-    }
-
     //CheckLogic
     private String CheckLogic(DataItem dataItem) throws ParseException {
         String startTime = dataItem.getScheduleItem().getTimeStart();
@@ -285,6 +287,23 @@ public class SetTimeFragment extends Fragment {
     }
     //Region Function: Create New Schedule
 
+    private void ShowDialogStatus(int dialog, int textView, int status) {
+        final Dialog dialogStatus = new Dialog(Objects.requireNonNull(getContext()));
+        dialogStatus.setContentView(dialog);
+        Objects.requireNonNull(dialogStatus.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        TextView txtStatus = dialogStatus.findViewById(textView);
+        txtStatus.setText(status);
+        dialogStatus.setCanceledOnTouchOutside(false);
+        dialogStatus.show();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                dialogStatus.cancel();
+            }
+        }, 500);
+
+    }
 
     private void SetData(DataItem dataItem) {
 
@@ -297,16 +316,17 @@ public class SetTimeFragment extends Fragment {
 
         db.collection(dataItem.getIdUser()).document(dataItem.getDate())
                 .set(docData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_written);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w("AAA", "Error writing document", e);
-
+                        ShowDialogStatus(R.layout.dialog_error_status, R.id.txtStatusError, R.string.status_error_write);
                     }
                 });
     }
@@ -322,15 +342,17 @@ public class SetTimeFragment extends Fragment {
 
         db.collection(dataItem.getIdUser()).document(dataItem.getDate())
                 .update(docData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_written);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w("AAA", "Error writing document", e);
+                        ShowDialogStatus(R.layout.dialog_error_status, R.id.txtStatusError, R.string.status_error_write);
                     }
                 });
 
@@ -413,11 +435,11 @@ public class SetTimeFragment extends Fragment {
                         dataItem.setDate(dateMemory);
                         arrCreatedData.add(dataItem);
                     }
-                    if(arrCreatedData.isEmpty())
-                    {
+                    if (arrCreatedData.isEmpty()) {
                         recyclerView.setVisibility(View.INVISIBLE);
                         txtNoSchedule.setVisibility(View.VISIBLE);
-                    }else {
+                        DeleteDocIfNull(idUser, dateMemory);
+                    } else {
                         Collections.sort(arrCreatedData);
                         ScheduleAdapter scheduleAdapter = new ScheduleAdapter(arrCreatedData, getContext());
                         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
@@ -433,5 +455,22 @@ public class SetTimeFragment extends Fragment {
 
             }
         });
+    }
+
+    private void DeleteDocIfNull(String id, String date) {
+        db.collection(id).document(date)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
     }
 }
