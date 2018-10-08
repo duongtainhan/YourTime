@@ -160,7 +160,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 try {
                     String error = CheckLogic(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString());
                     if (error == null) {
-                        DeleteData(dataItem,1);
                         UpdateData(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString());
                         dialogUpdate.cancel();
                     } else {
@@ -216,32 +215,28 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DeleteData(dataItem,0);
+                DeleteData(dataItem);
                 dialogDelete.cancel();
             }
         });
     }
 
-    private void ShowDialogStatus(int dialog, int textView, int status, int count) {
-        count++;
-        if(count == 1)
-        {
-            final Dialog dialogStatus = new Dialog(context);
-            dialogStatus.setContentView(dialog);
-            dialogStatus.setCanceledOnTouchOutside(false);
-            Objects.requireNonNull(dialogStatus.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            TextView txtStatus = dialogStatus.findViewById(textView);
-            dialogStatus.setCanceledOnTouchOutside(false);
-            txtStatus.setText(status);
-            dialogStatus.show();
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    dialogStatus.cancel();
-                }
-            }, 500);
-        }
+    private void ShowDialogStatus(int dialog, int textView, int status) {
+        final Dialog dialogStatus = new Dialog(context);
+        dialogStatus.setContentView(dialog);
+        dialogStatus.setCanceledOnTouchOutside(false);
+        Objects.requireNonNull(dialogStatus.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        TextView txtStatus = dialogStatus.findViewById(textView);
+        dialogStatus.setCanceledOnTouchOutside(false);
+        txtStatus.setText(status);
+        dialogStatus.show();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                dialogStatus.cancel();
+            }
+        }, 500);
     }
 
     private void UpdateData(DataItem dataItem, String startTime, String note) {
@@ -257,18 +252,18 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_update,0);
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_update);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_update,0);
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_update);
                     }
                 });
     }
 
-    private void DeleteData(DataItem dataItem, final int count) {
+    private void DeleteData(DataItem dataItem) {
         DocumentReference docRef = db.collection(dataItem.getIdUser()).document(dataItem.getDate());
         Map<String, Object> updates = new HashMap<>();
         updates.put(dataItem.getScheduleItem().getTimeStart(), FieldValue.delete());
@@ -276,13 +271,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_delete,count);
+                ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_delete);
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_delete,count);
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_delete);
                     }
                 });
     }
