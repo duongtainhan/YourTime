@@ -301,7 +301,7 @@ public class SetTimeFragment extends Fragment {
             public void run() {
                 dialogStatus.cancel();
             }
-        }, 500);
+        }, 999);
 
     }
 
