@@ -63,7 +63,7 @@ public class SetTimeFragment extends Fragment {
     private CalendarView calendarView;
     private FloatingActionButton floatingActionButton;
     private Dialog dialog;
-    private TextView txtDate;
+    //private TextView txtDate;
     private Calendar calendar;
     private TextView txtDateDialog;
     private Button btnCreate;
@@ -82,6 +82,7 @@ public class SetTimeFragment extends Fragment {
     private RecyclerView recyclerView;
     private TextView txtNoSchedule;
     private Button btnCancel;
+    String dateCalendar;
 
     @Nullable
     @Override
@@ -105,7 +106,7 @@ public class SetTimeFragment extends Fragment {
 
         calendarView = view.findViewById(R.id.calendar);
         floatingActionButton = view.findViewById(R.id.floatingButton);
-        txtDate = view.findViewById(R.id.txtDate);
+        //txtDate = view.findViewById(R.id.txtDate);
         SetDate(0, 0, 0);
         db = FirebaseFirestore.getInstance();
         recyclerView = view.findViewById(R.id.recyclerView);
@@ -131,7 +132,8 @@ public class SetTimeFragment extends Fragment {
                 linearStartTime = dialog.findViewById(R.id.linearStartTime);
                 txtDateDialog = dialog.findViewById(R.id.txtDateDialog);
                 //set text header Date
-                txtDateDialog.setText(txtDate.getText());
+                //txtDateDialog.setText(txtDate.getText());
+                txtDateDialog.setText(dateCalendar);
                 //
                 txtTimeStart = dialog.findViewById(R.id.txtTimeStart);
                 btnCreate = dialog.findViewById(R.id.btnCreate);
@@ -229,7 +231,8 @@ public class SetTimeFragment extends Fragment {
         }
         String date = formatDate.format(calendar.getTime());
         dateMemory = format.format(calendar.getTime());
-        txtDate.setText(date);
+        //txtDate.setText(date);
+        dateCalendar = date;
     }
 
     private void EventCalendar() {
@@ -417,7 +420,6 @@ public class SetTimeFragment extends Fragment {
                     txtNoSchedule.setText("ERROR");
                     return;
                 }
-
                 if (snapshot != null && snapshot.exists()) {
                     recyclerView.setVisibility(View.VISIBLE);
                     txtNoSchedule.setVisibility(View.INVISIBLE);
@@ -433,7 +435,10 @@ public class SetTimeFragment extends Fragment {
                         dataItem.setScheduleItem(scheduleItem);
                         dataItem.setIdUser(idUser);
                         dataItem.setDate(dateMemory);
-                        arrCreatedData.add(dataItem);
+                        if(Objects.requireNonNull(nestedData.get("Status")).equals("Not Ready"))
+                        {
+                            arrCreatedData.add(dataItem);
+                        }
                     }
                     if (arrCreatedData.isEmpty()) {
                         recyclerView.setVisibility(View.INVISIBLE);
