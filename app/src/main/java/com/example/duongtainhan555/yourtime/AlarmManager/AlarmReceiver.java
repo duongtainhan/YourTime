@@ -8,6 +8,7 @@ import android.util.Log;
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("ALARM","HI !!! ALARM....");
+        Intent i = new Intent(context,MusicService.class);
+        context.startService(i);
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.duongtainhan555.yourtime">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -10,20 +11,30 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".Activity.MainActivity"
-            android:hardwareAccelerated="true"/>
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".Activity.SplashActivity"
-            android:theme="@style/AppTheme.SplashScreen">
+            android:theme="@style/AppTheme.SplashScreen"
+            tools:ignore="InnerclassSeparator">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.LoginActivity" />
-        <receiver android:name=".AlarmManager.AlarmReceiver"/>
+        <activity android:name=".Activity.LoginActivity"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".Activity.MainActivity"
+            android:hardwareAccelerated="true"
+            tools:ignore="InnerclassSeparator" />
+        <receiver android:name=".AlarmManager.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true"
+            tools:ignore="InnerclassSeparator" />
+        <service android:name=".AlarmManager.MusicService"
+            android:enabled="true"
+            tools:ignore="InnerclassSeparator" />
     </application>
 
 </manifest>

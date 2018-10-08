@@ -97,9 +97,6 @@ public class SetTimeFragment extends Fragment {
     private FirebaseFirestore db;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
-    //Init Alarm
-    AlarmManager alarmManager;
-    PendingIntent pendingIntent;
 
 
     @Nullable
@@ -121,9 +118,6 @@ public class SetTimeFragment extends Fragment {
     }
 
     private void InitView() {
-        //Init Alarm
-        alarmManager = (AlarmManager) Objects.requireNonNull(getContext()).getSystemService(Context.ALARM_SERVICE);
-
         //Init View
         calendarView = view.findViewById(R.id.calendar);
         floatingActionButton = view.findViewById(R.id.floatingButton);
@@ -498,22 +492,6 @@ public class SetTimeFragment extends Fragment {
                         recyclerView.setLayoutManager(layoutManager);
                         recyclerView.setItemAnimator(new DefaultItemAnimator());
                         recyclerView.setAdapter(scheduleAdapter);
-                        //Alarm
-                        Intent intent = new Intent(getActivity(),AlarmReceiver.class);
-                        pendingIntent = PendingIntent.getBroadcast(
-                                getContext(),0,intent,PendingIntent.FLAG_UPDATE_CURRENT
-                        );
-                        Calendar calendar;
-                        calendar = Calendar.getInstance();
-                        String timeAlarm = arrCreatedData.get(0).getScheduleItem().getTimeStart();
-                        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-                        try {
-                            calendar.setTime(simpleDateFormat.parse(timeAlarm));
-                            alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
-                            Log.d("ALARM","ok: "+calendar.getTimeInMillis());
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
                     }
 
                 } else {
