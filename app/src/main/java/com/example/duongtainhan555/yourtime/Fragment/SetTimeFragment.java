@@ -1,9 +1,13 @@
 package com.example.duongtainhan555.yourtime.Fragment;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -19,7 +23,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,12 +30,11 @@ import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.example.duongtainhan555.yourtime.Adapter.ScheduleAdapter;
+import com.example.duongtainhan555.yourtime.AlarmManager.AlarmReceiver;
 import com.example.duongtainhan555.yourtime.CustomView.CustomScrollView;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
@@ -95,13 +97,15 @@ public class SetTimeFragment extends Fragment {
     private FirebaseFirestore db;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
+    //Init Alarm
+    AlarmManager alarmManager;
+    PendingIntent pendingIntent;
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_settime, container, false);
-
         //Init View
         InitView();
         return view;
@@ -117,7 +121,10 @@ public class SetTimeFragment extends Fragment {
     }
 
     private void InitView() {
+        //Init Alarm
+        alarmManager = (AlarmManager) Objects.requireNonNull(getContext()).getSystemService(Context.ALARM_SERVICE);
 
+        //Init View
         calendarView = view.findViewById(R.id.calendar);
         floatingActionButton = view.findViewById(R.id.floatingButton);
         txtDate = view.findViewById(R.id.txtDate);
@@ -491,6 +498,22 @@ public class SetTimeFragment extends Fragment {
                         recyclerView.setLayoutManager(layoutManager);
                         recyclerView.setItemAnimator(new DefaultItemAnimator());
                         recyclerView.setAdapter(scheduleAdapter);
+                        //Alarm
+                        Intent intent = new Intent(getActivity(),AlarmReceiver.class);
+                        pendingIntent = PendingIntent.getBroadcast(
+                                getContext(),0,intent,PendingIntent.FLAG_UPDATE_CURRENT
+                        );
+                        Calendar calendar;
+                        calendar = Calendar.getInstance();
+                        String timeAlarm = arrCreatedData.get(0).getScheduleItem().getTimeStart();
+                        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                        try {
+                            calendar.setTime(simpleDateFormat.parse(timeAlarm));
+                            alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
+                            Log.d("ALARM","ok: "+calendar.getTimeInMillis());
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
                     }
 
                 } else {
