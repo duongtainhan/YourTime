@@ -12,11 +12,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -24,6 +27,7 @@ import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -59,30 +63,38 @@ import static android.content.ContentValues.TAG;
 
 public class SetTimeFragment extends Fragment {
 
+    //Init view of fragment
     View view;
+    //Init object
     private CalendarView calendarView;
     private FloatingActionButton floatingActionButton;
     private Dialog dialog;
-    //private TextView txtDate;
     private Calendar calendar;
     private TextView txtDateDialog;
     private Button btnCreate;
     private TextView txtTimeStart;
-    private FirebaseFirestore db;
     private LinearLayout linearStartTime;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
-    private String idUser;
-    private DataItem createNewData;
-    private ScheduleItem createNewScheduleItem;
-    private List<DataItem> arrCreatedData;
-    private String dateMemory;
     private EditText edNote;
     private Dialog dialogNotif;
     private RecyclerView recyclerView;
     private TextView txtNoSchedule;
     private Button btnCancel;
-    String dateCalendar;
+    private ScrollView scrollView;
+    private TextView txtDate;
+    private Toolbar toolbar;
+    private CardView cardViewCalendar;
+    //Init variable
+    private String idUser;
+    private DataItem createNewData;
+    private ScheduleItem createNewScheduleItem;
+    private List<DataItem> arrCreatedData;
+    private String dateMemory;
+    private String dateCalendar;
+    //Init firebase
+    private FirebaseFirestore db;
+    private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
+
 
     @Nullable
     @Override
@@ -99,6 +111,7 @@ public class SetTimeFragment extends Fragment {
         //Event
         EventCalendar();
         EventFloatingButton();
+        EventTouchScrollView();
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -106,13 +119,40 @@ public class SetTimeFragment extends Fragment {
 
         calendarView = view.findViewById(R.id.calendar);
         floatingActionButton = view.findViewById(R.id.floatingButton);
-        //txtDate = view.findViewById(R.id.txtDate);
-        SetDate(0, 0, 0);
+        txtDate = view.findViewById(R.id.txtDate);
+        toolbar = view.findViewById(R.id.toolBar);
         db = FirebaseFirestore.getInstance();
         recyclerView = view.findViewById(R.id.recyclerView);
         txtNoSchedule = view.findViewById(R.id.txtNoSchedule);
+        scrollView = view.findViewById(R.id.scrollView);
+        cardViewCalendar = view.findViewById(R.id.cardViewCalendar);
+        //
+        SetDate(0, 0, 0);
         GetIdUser();
         GetData();
+    }
+    private void EventTouchScrollView()
+    {
+        scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if(scrollY>oldScrollY)
+                {
+                    floatingActionButton.setVisibility(View.INVISIBLE);
+                    //cardViewCalendar.setVisibility(View.INVISIBLE);
+                    toolbar.setVisibility(View.VISIBLE);
+                    txtDate.setText(dateCalendar);
+                }
+                else
+                    if(scrollY<oldScrollY)
+                    {
+                        floatingActionButton.setVisibility(View.VISIBLE);
+                        cardViewCalendar.setVisibility(View.VISIBLE);
+                        toolbar.setVisibility(View.INVISIBLE);
+                    }
+            }
+        });
     }
 
     private void GetIdUser() {
@@ -132,7 +172,6 @@ public class SetTimeFragment extends Fragment {
                 linearStartTime = dialog.findViewById(R.id.linearStartTime);
                 txtDateDialog = dialog.findViewById(R.id.txtDateDialog);
                 //set text header Date
-                //txtDateDialog.setText(txtDate.getText());
                 txtDateDialog.setText(dateCalendar);
                 //
                 txtTimeStart = dialog.findViewById(R.id.txtTimeStart);
@@ -228,11 +267,10 @@ public class SetTimeFragment extends Fragment {
         if (year != 0) {
             calendar.set(year, month, dayOfMonth);
             dateMemory = format.format(calendar.getTime());
+            dateCalendar = formatDate.format(calendar.getTime());
         }
-        String date = formatDate.format(calendar.getTime());
         dateMemory = format.format(calendar.getTime());
-        //txtDate.setText(date);
-        dateCalendar = date;
+        dateCalendar = formatDate.format(calendar.getTime());
     }
 
     private void EventCalendar() {
@@ -304,7 +342,7 @@ public class SetTimeFragment extends Fragment {
             public void run() {
                 dialogStatus.cancel();
             }
-        }, 999);
+        }, 1369);
 
     }
 

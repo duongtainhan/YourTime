@@ -26,22 +26,13 @@
                 android:textStyle="bold" />
             <TextView
                 android:layout_centerHorizontal="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/not_ready"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginStart="@dimen/_10sdp"
-                android:id="@+id/txtStatusSchedule"
-                android:textSize="@dimen/_12ssp"
-                android:layout_below="@id/txtStartSchedule"/>
-            <TextView
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginStart="@dimen/_10sdp"
+                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/txtNoteSchedule"
-                android:layout_below="@id/txtStatusSchedule"
+                android:layout_below="@id/txtStartSchedule"
                 android:text="@string/day_la_ghi_chu"
                 android:textSize="@dimen/_12ssp"
                 android:layout_marginBottom="@dimen/_10sdp"/>

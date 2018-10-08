@@ -73,7 +73,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         final DataItem dataItem = dataItems.get(i);
         viewHolder.txtStartTime.setText(dataItem.getScheduleItem().getTimeStart());
         viewHolder.txtNote.setText(dataItem.getScheduleItem().getNote());
-        viewHolder.txtStatus.setText(dataItem.getScheduleItem().getStatus());
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("RestrictedApi")
             @Override
@@ -245,7 +244,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 public void run() {
                     dialogStatus.cancel();
                 }
-            }, 999);
+            }, 1369);
         }
     }
 
@@ -300,7 +299,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtStartTime;
         TextView txtNote;
-        TextView txtStatus;
         ImageView imgOption;
         CardView cardViewSchedule;
 
@@ -310,7 +308,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             txtStartTime = itemView.findViewById(R.id.txtStartSchedule);
             txtNote = itemView.findViewById(R.id.txtNoteSchedule);
             imgOption = itemView.findViewById(R.id.imgOptionSchedule);
-            txtStatus = itemView.findViewById(R.id.txtStatusSchedule);
         }
     }
 }
