@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <ScrollView
+    <com.example.duongtainhan555.yourtime.CustomView.CustomScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,7 +54,7 @@
                     android:visibility="invisible" />
             </RelativeLayout>
         </LinearLayout>
-    </ScrollView>
+    </com.example.duongtainhan555.yourtime.CustomView.CustomScrollView>
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolBar"
         android:visibility="invisible"

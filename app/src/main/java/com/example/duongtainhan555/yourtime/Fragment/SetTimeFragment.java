@@ -33,6 +33,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.duongtainhan555.yourtime.Adapter.ScheduleAdapter;
+import com.example.duongtainhan555.yourtime.CustomView.CustomScrollView;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
 import com.example.duongtainhan555.yourtime.R;
@@ -79,7 +80,7 @@ public class SetTimeFragment extends Fragment {
     private RecyclerView recyclerView;
     private TextView txtNoSchedule;
     private Button btnCancel;
-    private ScrollView scrollView;
+    private CustomScrollView scrollView;
     private TextView txtDate;
     private Toolbar toolbar;
     private CardView cardViewCalendar;
@@ -479,6 +480,7 @@ public class SetTimeFragment extends Fragment {
                         }
                     }
                     if (arrCreatedData.isEmpty()) {
+                        scrollView.setEnableScrolling(false);
                         recyclerView.setVisibility(View.INVISIBLE);
                         txtNoSchedule.setVisibility(View.VISIBLE);
                         DeleteDocIfNull(idUser, dateMemory);
