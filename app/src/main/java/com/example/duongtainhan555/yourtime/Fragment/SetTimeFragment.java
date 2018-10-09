@@ -1,13 +1,9 @@
 package com.example.duongtainhan555.yourtime.Fragment;
 
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -34,8 +30,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.duongtainhan555.yourtime.Adapter.ScheduleAdapter;
-import com.example.duongtainhan555.yourtime.AlarmManager.AlarmReceiver;
 import com.example.duongtainhan555.yourtime.CustomView.CustomScrollView;
+import com.example.duongtainhan555.yourtime.Interface.SendDataAlarm;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
 import com.example.duongtainhan555.yourtime.R;
@@ -50,6 +46,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -94,10 +91,12 @@ public class SetTimeFragment extends Fragment {
     private String dateMemory;
     private String dateCalendar;
     private String time;
+    private List<DataItem> arrDataAlarm;
+    private SendDataAlarm sendDataAlarm;
     //Init firebase
     private FirebaseFirestore db;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
 
     @Nullable
@@ -106,6 +105,8 @@ public class SetTimeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_settime, container, false);
         //Init View
         InitView();
+        //Get Data Alarm
+        GetDataAlarm();
         return view;
     }
 
@@ -134,26 +135,22 @@ public class SetTimeFragment extends Fragment {
         GetIdUser();
         GetData();
     }
-    private void EventTouchScrollView()
-    {
+
+    private void EventTouchScrollView() {
         scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @SuppressLint("RestrictedApi")
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                if(scrollY>oldScrollY)
-                {
+                if (scrollY > oldScrollY) {
                     floatingActionButton.setVisibility(View.INVISIBLE);
                     //cardViewCalendar.setVisibility(View.INVISIBLE);
                     toolbar.setVisibility(View.VISIBLE);
                     txtDate.setText(dateCalendar);
+                } else if (scrollY < oldScrollY) {
+                    floatingActionButton.setVisibility(View.VISIBLE);
+                    cardViewCalendar.setVisibility(View.VISIBLE);
+                    toolbar.setVisibility(View.INVISIBLE);
                 }
-                else
-                    if(scrollY<oldScrollY)
-                    {
-                        floatingActionButton.setVisibility(View.VISIBLE);
-                        cardViewCalendar.setVisibility(View.VISIBLE);
-                        toolbar.setVisibility(View.INVISIBLE);
-                    }
             }
         });
     }
@@ -195,8 +192,8 @@ public class SetTimeFragment extends Fragment {
             }
         });
     }
-    private void EventClickCancel()
-    {
+
+    private void EventClickCancel() {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -204,6 +201,7 @@ public class SetTimeFragment extends Fragment {
             }
         });
     }
+
     private void ShowDialogError(String text) {
         dialogNotif = new Dialog(Objects.requireNonNull(getContext()));
         dialogNotif.setContentView(R.layout.dialog_error_time);
@@ -479,8 +477,7 @@ public class SetTimeFragment extends Fragment {
                         dataItem.setScheduleItem(scheduleItem);
                         dataItem.setIdUser(idUser);
                         dataItem.setDate(dateMemory);
-                        if(Objects.requireNonNull(nestedData.get("Status")).equals("Not Ready"))
-                        {
+                        if (Objects.requireNonNull(nestedData.get("Status")).equals("Not Ready")) {
                             arrCreatedData.add(dataItem);
                         }
                     }
@@ -520,6 +517,54 @@ public class SetTimeFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error deleting document", e);
+                    }
+                });
+    }
+
+    private void GetDataAlarm() {
+        arrDataAlarm = new ArrayList<>();
+        db.collection(idUser)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "listen:error", e);
+                            return;
+                        }
+
+                        for (DocumentSnapshot snapshot : Objects.requireNonNull(snapshots).getDocuments()) {
+                            if (snapshot != null && snapshot.exists()) {
+                                arrDataAlarm.clear();
+                                Log.d(TAG, "Current data: " + snapshot.getData());
+                                for (Map.Entry<String, Object> entry : Objects.requireNonNull(snapshot.getData()).entrySet()) {
+                                    DataItem dataItem = new DataItem();
+                                    ScheduleItem scheduleItem = new ScheduleItem();
+                                    dataItem.setDate(snapshot.getId());
+                                    dataItem.setIdUser(idUser);
+                                    scheduleItem.setTimeStart(entry.getKey());
+                                    Map<String, String> nestedData = (Map<String, String>) entry.getValue();
+                                    scheduleItem.setNote(nestedData.get("Note"));
+                                    scheduleItem.setStatus(nestedData.get("Status"));
+                                    scheduleItem.setAlarm(nestedData.get("Alarm"));
+                                    dataItem.setScheduleItem(scheduleItem);
+                                    if ("on".equals(scheduleItem.getAlarm())) {
+                                        arrDataAlarm.add(dataItem);
+                                        sendDataAlarm = (SendDataAlarm) getActivity();
+                                        Objects.requireNonNull(sendDataAlarm).SendData(arrDataAlarm);
+                                    }
+                                }
+                                if (arrDataAlarm.isEmpty()) {
+
+                                } else {
+                                    Collections.sort(arrDataAlarm);
+                                }
+
+                            } else {
+
+                            }
+                        }
+
                     }
                 });
     }

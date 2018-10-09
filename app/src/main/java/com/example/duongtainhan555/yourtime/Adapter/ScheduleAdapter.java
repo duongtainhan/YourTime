@@ -79,18 +79,18 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         final DataItem dataItem = dataItems.get(i);
         viewHolder.txtStartTime.setText(dataItem.getScheduleItem().getTimeStart());
         viewHolder.txtNote.setText(dataItem.getScheduleItem().getNote());
-        if(dataItem.getScheduleItem().getAlarm().equals("off"))
-        {
-            viewHolder.imgOption.setImageResource(R.drawable.ic_off);
-            viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
-            viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
-        }
-        else
-        {
-            viewHolder.imgOption.setImageResource(R.drawable.ic_on);
-            viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
-            viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
-        }
+            if("off".equals(dataItem.getScheduleItem().getAlarm()))
+            {
+                viewHolder.imgOption.setImageResource(R.drawable.ic_off);
+                viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
+                viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
+            }
+            else
+            {
+                viewHolder.imgOption.setImageResource(R.drawable.ic_on);
+                viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
+                viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
+            }
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
             String alarm = dataItem.getScheduleItem().getAlarm();
             String enable = "off";
@@ -140,6 +140,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             }
         });
     }
+
     private void UpdateAlarm(DataItem dataItem, String alarm)
     {
         final Map<String, Object> docData = new HashMap<>();
