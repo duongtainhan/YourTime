@@ -428,7 +428,7 @@ public class SetTimeFragment extends Fragment {
                     createNewData.setIdUser(idUser);
                     createNewData.setDate(dateMemory);
                     createNewScheduleItem.setNote(edNote.getText().toString());
-                    createNewScheduleItem.setAlarm("off");
+                    createNewScheduleItem.setAlarm("on");
                     createNewScheduleItem.setStatus("Not Ready");
                     createNewData.setScheduleItem(createNewScheduleItem);
                     String checkLogic = CheckLogic(createNewData);

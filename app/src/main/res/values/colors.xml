@@ -14,6 +14,4 @@
     <color name="material_background_orange">#f6c544</color>
     <color name="material_text">#101010</color>
     <color name="material_background">#fafafa</color>
-    <color name="material_off_text">#e8e8e8</color>
-    <color name="material_on_text">#757575</color>
 </resources>

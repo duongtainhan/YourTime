@@ -82,10 +82,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         if(dataItem.getScheduleItem().getAlarm().equals("off"))
         {
             viewHolder.imgOption.setImageResource(R.drawable.ic_off);
+            viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
+            viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
         }
         else
         {
             viewHolder.imgOption.setImageResource(R.drawable.ic_on);
+            viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
+            viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
         }
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
             String alarm = dataItem.getScheduleItem().getAlarm();
