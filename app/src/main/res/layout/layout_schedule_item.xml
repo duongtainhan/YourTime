@@ -39,9 +39,9 @@
             <ImageView
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:layout_width="@dimen/_30sdp"
+                android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_30sdp"
-                android:src="@drawable/ic_option"
+                android:src="@drawable/ic_off"
                 android:layout_alignParentEnd="true"
                 android:id="@+id/imgOptionSchedule"/>
         </RelativeLayout>

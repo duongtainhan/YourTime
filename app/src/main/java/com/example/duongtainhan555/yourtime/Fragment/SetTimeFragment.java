@@ -93,6 +93,7 @@ public class SetTimeFragment extends Fragment {
     private List<DataItem> arrCreatedData;
     private String dateMemory;
     private String dateCalendar;
+    private String time;
     //Init firebase
     private FirebaseFirestore db;
     private FirebaseAuth firebaseAuth;
@@ -190,11 +191,6 @@ public class SetTimeFragment extends Fragment {
                 Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
-                createNewData = new DataItem();
-                createNewScheduleItem = new ScheduleItem();
-                createNewData.setIdUser(idUser);
-                createNewData.setScheduleItem(createNewScheduleItem);
-                createNewData.setDate(dateMemory);
                 EventCreateEvent();
             }
         });
@@ -296,8 +292,7 @@ public class SetTimeFragment extends Fragment {
                 Calendar calendarTime = Calendar.getInstance();
                 calendarTime.set(0, 0, 0, hourOfDay, minute);
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
-                String time = formatTime.format(calendarTime.getTime());
-                createNewScheduleItem.setTimeStart(time);
+                time = formatTime.format(calendarTime.getTime());
                 textView.setText(time);
             }
         }, hour, min, true);
@@ -354,6 +349,7 @@ public class SetTimeFragment extends Fragment {
         Map<String, String> nestedData = new HashMap<>();
         nestedData.put("Note", dataItem.getScheduleItem().getNote());
         nestedData.put("Status", dataItem.getScheduleItem().getStatus());
+        nestedData.put("Alarm", dataItem.getScheduleItem().getAlarm());
 
         docData.put(dataItem.getScheduleItem().getTimeStart(), nestedData);
 
@@ -375,11 +371,11 @@ public class SetTimeFragment extends Fragment {
     }
 
     private void UpdateData(DataItem dataItem) {
-
         Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
         nestedData.put("Note", dataItem.getScheduleItem().getNote());
         nestedData.put("Status", dataItem.getScheduleItem().getStatus());
+        nestedData.put("Alarm", dataItem.getScheduleItem().getAlarm());
 
         docData.put(dataItem.getScheduleItem().getTimeStart(), nestedData);
 
@@ -425,11 +421,18 @@ public class SetTimeFragment extends Fragment {
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createNewScheduleItem.setNote(edNote.getText().toString());
                 try {
+                    createNewData = new DataItem();
+                    createNewScheduleItem = new ScheduleItem();
+                    createNewScheduleItem.setTimeStart(time);
+                    createNewData.setIdUser(idUser);
+                    createNewData.setDate(dateMemory);
+                    createNewScheduleItem.setNote(edNote.getText().toString());
+                    createNewScheduleItem.setAlarm("off");
+                    createNewScheduleItem.setStatus("Not Ready");
+                    createNewData.setScheduleItem(createNewScheduleItem);
                     String checkLogic = CheckLogic(createNewData);
                     if (checkLogic == null) {
-                        createNewScheduleItem.setStatus("Not Ready");
                         InsertData(createNewData);
                         dialog.cancel();
                     } else {
@@ -472,6 +475,7 @@ public class SetTimeFragment extends Fragment {
                         Map<String, String> nestedData = (Map<String, String>) entry.getValue();
                         scheduleItem.setNote(nestedData.get("Note"));
                         scheduleItem.setStatus(nestedData.get("Status"));
+                        scheduleItem.setAlarm(nestedData.get("Alarm"));
                         dataItem.setScheduleItem(scheduleItem);
                         dataItem.setIdUser(idUser);
                         dataItem.setDate(dateMemory);

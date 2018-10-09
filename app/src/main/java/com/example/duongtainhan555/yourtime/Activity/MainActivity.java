@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private String idUser;
+    private AlarmManager alarmManager;
+    private PendingIntent pendingIntent;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,60 +111,20 @@ public class MainActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
     }
 
-    private void SetAlarm() {
-        final Calendar calendar = Calendar.getInstance();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("dd-MM-yyyy");
-        final String date = formatDate.format(calendar.getTime());
-        final List<DataItem> arrData = new ArrayList<>();
-        final DocumentReference docRef = db.collection(idUser).document(date);
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    return;
-                }
-                if (snapshot != null && snapshot.exists()) {
-                    arrData.clear();
-                    for (Map.Entry<String, Object> entry : Objects.requireNonNull(snapshot.getData()).entrySet()) {
-                        DataItem dataItem = new DataItem();
-                        ScheduleItem scheduleItem = new ScheduleItem();
-                        scheduleItem.setTimeStart(entry.getKey());
-                        Map<String, String> nestedData = (Map<String, String>) entry.getValue();
-                        scheduleItem.setNote(nestedData.get("Note"));
-                        scheduleItem.setStatus(nestedData.get("Status"));
-                        dataItem.setScheduleItem(scheduleItem);
-                        dataItem.setIdUser(idUser);
-                        dataItem.setDate(date);
-                        if (Objects.requireNonNull(nestedData.get("Status")).equals("Not Ready")) {
-                            arrData.add(dataItem);
-                        }
-                    }
-                    if (!arrData.isEmpty()) {
-                        Collections.sort(arrData);
-                        //InitAlarm(arrData);
-                    }
+    private void InitAlarm() {
 
-                } else {
-                    //Faild
-                }
-
-            }
-        });
-    }
-    private void InitAlarm(){
-        final Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+        intent = new Intent(MainActivity.this, AlarmReceiver.class);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        pendingIntent = PendingIntent.getBroadcast(
                 MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
         );
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY,2);
-        calendar.set(Calendar.MINUTE,12);
-        Log.d("ALARM_CA",calendar.getTimeInMillis()+"");
+        calendar.set(Calendar.HOUR_OF_DAY, 10);
+        calendar.set(Calendar.MINUTE, 40);
+        calendar.set(Calendar.SECOND, 0);
         if (alarmManager != null) {
+            Log.d("ALARM_CA", calendar.getTimeInMillis() + "");
             alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
         }
     }

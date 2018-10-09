@@ -12,6 +12,15 @@ public class ScheduleItem {
     private String timeStart;
     private String note;
     private String status;
+    private String alarm;
+
+    public String getAlarm() {
+        return alarm;
+    }
+
+    public void setAlarm(String alarm) {
+        this.alarm = alarm;
+    }
 
     public String getTimeStart() {
         return timeStart;

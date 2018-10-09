@@ -1,14 +1,18 @@
 package com.example.duongtainhan555.yourtime.Adapter;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.CardView;
@@ -27,6 +31,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import com.example.duongtainhan555.yourtime.Activity.MainActivity;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
 import com.example.duongtainhan555.yourtime.R;
@@ -73,10 +79,35 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         final DataItem dataItem = dataItems.get(i);
         viewHolder.txtStartTime.setText(dataItem.getScheduleItem().getTimeStart());
         viewHolder.txtNote.setText(dataItem.getScheduleItem().getNote());
+        if(dataItem.getScheduleItem().getAlarm().equals("off"))
+        {
+            viewHolder.imgOption.setImageResource(R.drawable.ic_off);
+        }
+        else
+        {
+            viewHolder.imgOption.setImageResource(R.drawable.ic_on);
+        }
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("RestrictedApi")
+            String alarm = dataItem.getScheduleItem().getAlarm();
+            String enable = "off";
             @Override
             public void onClick(View v) {
+                if(alarm.equals("off"))
+                {
+                    enable ="on";
+                }
+                if(alarm.equals("on"))
+                {
+                    enable ="off";
+                }
+                UpdateAlarm(dataItem, enable);
+            }
+
+        });
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public boolean onLongClick(View v) {
                 PopupMenu popupMenu = new PopupMenu(context, v);
                 popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -90,12 +121,43 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         return true;
                     }
                 });
-                MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popupMenu.getMenu(), v);
+                @SuppressLint("RestrictedApi") MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popupMenu.getMenu(), v);
                 menuHelper.setForceShowIcon(true);
+                menuHelper.setGravity(Gravity.END);
                 menuHelper.show();
                 //popupMenu.show();
+                return true;
             }
         });
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowDialogUpdate(dataItem);
+            }
+        });
+    }
+    private void UpdateAlarm(DataItem dataItem, String alarm)
+    {
+        final Map<String, Object> docData = new HashMap<>();
+        Map<String, String> nestedData = new HashMap<>();
+        nestedData.put("Note", dataItem.getScheduleItem().getNote());
+        nestedData.put("Status", dataItem.getScheduleItem().getStatus());
+        nestedData.put("Alarm", alarm);
+
+        docData.put(dataItem.getScheduleItem().getTimeStart(), nestedData);
+
+        db.collection(dataItem.getIdUser()).document(dataItem.getDate())
+                .update(docData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                    }
+                });
     }
 
     private void ShowTimePicker(final TextView textView) {
@@ -253,6 +315,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         Map<String, String> nestedData = new HashMap<>();
         nestedData.put("Note", note);
         nestedData.put("Status", "Not Ready");
+        nestedData.put("Alarm", dataItem.getScheduleItem().getAlarm());
 
         docData.put(startTime, nestedData);
 
@@ -296,6 +359,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         return dataItems.size();
     }
 
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtStartTime;
         TextView txtNote;
@@ -310,4 +374,5 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             imgOption = itemView.findViewById(R.id.imgOptionSchedule);
         }
     }
+
 }

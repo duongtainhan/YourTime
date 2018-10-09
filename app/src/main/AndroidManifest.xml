@@ -29,12 +29,11 @@
             android:hardwareAccelerated="true"
             tools:ignore="InnerclassSeparator" />
         <receiver android:name=".AlarmManager.AlarmReceiver"
-            android:enabled="true"
-            android:exported="true"
             tools:ignore="InnerclassSeparator" />
-        <service android:name=".AlarmManager.MusicService"
+        <service android:name=".AlarmManager.RingtoneService"
             android:enabled="true"
-            tools:ignore="InnerclassSeparator" />
+            tools:ignore="InnerclassSeparator">
+        </service>
     </application>
 
 </manifest>
