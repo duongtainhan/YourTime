@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "150453159495",
+    "firebase_url": "https://yourtime-cdf31.firebaseio.com",
+    "project_id": "yourtime-cdf31",
+    "storage_bucket": "yourtime-cdf31.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:150453159495:android:bcd659a362147d53",
+        "android_client_info": {
+          "package_name": "com.example.duongtainhan555.yourtime"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "150453159495-tt9e3on0ut6of6m2ktnd4d4fkik6v794.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.duongtainhan555.yourtime",
+            "certificate_hash": "c01c06caf4cc1c29ff18f245b479bd2732882790"
+          }
+        },
+        {
+          "client_id": "150453159495-vqunmbrs48vl9l9bb1hjm033qjn0h63u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfd5w08hpbW8UcmpMf6_XXSGPQQLVnxUY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "150453159495-vqunmbrs48vl9l9bb1hjm033qjn0h63u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
