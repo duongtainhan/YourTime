@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.duongtainhan555.yourtime">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
@@ -28,12 +29,8 @@
         <activity android:name=".Activity.MainActivity"
             android:hardwareAccelerated="true"
             tools:ignore="InnerclassSeparator" />
-        <receiver android:name=".AlarmManager.AlarmReceiver"
+        <receiver android:name=".Utils.AlarmReceiver"
             tools:ignore="InnerclassSeparator" />
-        <service android:name=".AlarmManager.RingtoneService"
-            android:enabled="true"
-            tools:ignore="InnerclassSeparator">
-        </service>
     </application>
 
 </manifest>

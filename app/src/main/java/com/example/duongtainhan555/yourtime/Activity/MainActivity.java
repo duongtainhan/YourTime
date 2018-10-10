@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Build;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -11,19 +12,23 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.duongtainhan555.yourtime.Adapter.PagerAdapter;
-import com.example.duongtainhan555.yourtime.AlarmManager.AlarmReceiver;
+import com.example.duongtainhan555.yourtime.Constant;
 import com.example.duongtainhan555.yourtime.Interface.SendDataAlarm;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.R;
 import com.example.duongtainhan555.yourtime.Fragment.ReportFragment;
 import com.example.duongtainhan555.yourtime.Fragment.SetTimeFragment;
 import com.example.duongtainhan555.yourtime.Fragment.SettingFragment;
+import com.example.duongtainhan555.yourtime.Service.SchedulingService;
+import com.example.duongtainhan555.yourtime.Utils.AlarmReceiver;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SendDataAlarm {
@@ -35,10 +40,10 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     String idUser;
-    AlarmManager alarmManager;
-    PendingIntent pendingIntent;
-    Intent intent;
     List<DataItem> arrDataAlarm;
+    private PendingIntent pendingIntent;
+    private AlarmManager alarmManager;
+    private Intent intent;
 
 
     @Override
@@ -49,8 +54,8 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
         Init();
         //InitViewPager
         InitViewPager();
-        //Init Alarm
-        InitAlarm();
+        //SetAlarm
+        //SetAlarm();
     }
 
     private void Init() {
@@ -59,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
         //Init FireBase
         db = FirebaseFirestore.getInstance();
         GetIdUser();
+        //
+        intent = new Intent(this,AlarmReceiver.class);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     }
 
     private void GetIdUser() {
@@ -99,27 +107,41 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
     }
 
-    private void InitAlarm() {
-
-        intent = new Intent(MainActivity.this, AlarmReceiver.class);
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        pendingIntent = PendingIntent.getBroadcast(
-                MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT
-        );
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 10);
-        calendar.set(Calendar.MINUTE, 40);
-        calendar.set(Calendar.SECOND, 0);
-        if (alarmManager != null) {
-            Log.d("ALARM_CA", calendar.getTimeInMillis() + "");
-            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        }
-    }
 
     @Override
     public void SendData(List<DataItem> arrData) {
         arrDataAlarm = arrData;
-        Log.e("DATA", arrData.size() + "");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("dd-MM-yyyy");
+        for(int i=0;i<arrData.size();i++)
+        {
+            Log.d("ALARM","da khoi tao");
+            Date getDate = new Date();
+            Date getTime = new Date();
+            try {
+                getDate = formatDate.parse(arrDataAlarm.get(i).getDate());
+                getTime = formatTime.parse(arrDataAlarm.get(i).getScheduleItem().getTimeStart());
+                SetAlarm(getTime.getHours(),getTime.getMinutes());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    @SuppressLint("ObsoleteSdkInt")
+    private void SetAlarm(int hour, int min)
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY,hour);
+        calendar.set(Calendar.MINUTE,min);
+        calendar.set(Calendar.SECOND,0);
+        pendingIntent = PendingIntent.getService(
+                MainActivity.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarmManager
+                    .setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else {
+            alarmManager
+                    .set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
     }
 }
