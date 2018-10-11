@@ -19,7 +19,6 @@ import com.example.duongtainhan555.yourtime.R;
 import com.example.duongtainhan555.yourtime.Fragment.ReportFragment;
 import com.example.duongtainhan555.yourtime.Fragment.SetTimeFragment;
 import com.example.duongtainhan555.yourtime.Fragment.SettingFragment;
-import com.example.duongtainhan555.yourtime.Utils.AlarmReceiver;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;

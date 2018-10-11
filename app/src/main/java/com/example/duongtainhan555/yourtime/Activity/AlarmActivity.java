@@ -11,7 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.widget.ImageView;
 
 import com.example.duongtainhan555.yourtime.R;
 
@@ -20,7 +20,7 @@ import java.io.IOException;
 public class AlarmActivity extends AppCompatActivity {
 
     private MediaPlayer mMediaPlayer;
-    private Button btnStop;
+    private ImageView imgLog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,8 +29,8 @@ public class AlarmActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_alarm);
 
-        btnStop = findViewById(R.id.stopAlarm);
-        btnStop.setOnClickListener(new View.OnClickListener() {
+        imgLog = findViewById(R.id.imgLog);
+        imgLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mMediaPlayer.stop();

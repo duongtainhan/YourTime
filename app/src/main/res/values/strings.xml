@@ -41,4 +41,7 @@
     <string name="status_success_delete">Successfully deleted!</string>
     <string name="status_error_delete">Error deleting data</string>
     <string name="_00_00">00:00</string>
+    <string name="note_alarm">C# Android IOS Javacript React-native</string>
+    <string name="_17_30">17:30</string>
+    <string name="_5_october_2018">5 October 2018</string>
 </resources>

@@ -27,12 +27,6 @@
             android:hardwareAccelerated="true" />
         <activity android:name=".Activity.AlarmActivity"></activity>
         <receiver android:name=".Utils.AlarmReceiver"/>
-        <service android:name=".Service.RingtoneService"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="com.blah.blah.action.PLAY" />
-            </intent-filter>
-        </service>
     </application>
 
 </manifest>

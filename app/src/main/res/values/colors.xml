@@ -11,7 +11,9 @@
     <color name="material_dim_text">#606368</color>
     <color name="material_white">#f8fafe</color>
     <color name="material_title">#5285ec</color>
+    <color name="material_background_alarm">#6390ec</color>
     <color name="material_background_orange">#f6c544</color>
     <color name="material_text">#101010</color>
     <color name="material_background">#fafafa</color>
+    <color name="text_alarm_note">#3d8727</color>
 </resources>
