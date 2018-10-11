@@ -34,6 +34,7 @@ import com.example.duongtainhan555.yourtime.CustomView.CustomScrollView;
 import com.example.duongtainhan555.yourtime.Interface.SendDataAlarm;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
+import com.example.duongtainhan555.yourtime.Model.UserItem;
 import com.example.duongtainhan555.yourtime.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -85,13 +86,17 @@ public class SetTimeFragment extends Fragment {
     private CardView cardViewCalendar;
     //Init variable
     private String idUser;
+    private List<ScheduleItem> createNewScheduleItem;
+    private ScheduleItem scheduleItem;
     private DataItem createNewData;
-    private ScheduleItem createNewScheduleItem;
-    private List<DataItem> arrCreatedData;
+    private List<ScheduleItem> arrCreatedSchedule;
+    private DataItem createdData;
     private String dateMemory;
     private String dateCalendar;
     private String time;
-    private List<DataItem> arrDataAlarm;
+    private UserItem userItem;
+    private List<DataItem> arrDataItem;
+    private List<ScheduleItem> arrScheduleItem;
     private SendDataAlarm sendDataAlarm;
     //Init firebase
     private FirebaseFirestore db;
@@ -188,6 +193,9 @@ public class SetTimeFragment extends Fragment {
                 Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
+                createNewData = new DataItem();
+                createNewScheduleItem = new ArrayList<>();
+                scheduleItem = new ScheduleItem();
                 EventCreateEvent();
             }
         });
@@ -237,9 +245,8 @@ public class SetTimeFragment extends Fragment {
                         if (year != 0) {
                             calendar1.set(year, month, dayOfMonth);
                         }
-                        String date = formatDate.format(calendar1.getTime());
                         createNewData.setDate(format.format(calendar1.getTime()));
-                        txtDateDialog.setText(date);
+                        txtDateDialog.setText(formatDate.format(calendar1.getTime()));
                     }
                 }, year, month, date);
                 datePickerDialog.show();
@@ -299,9 +306,9 @@ public class SetTimeFragment extends Fragment {
 
     //CheckLogic
     private String CheckLogic(DataItem dataItem) throws ParseException {
-        String startTime = dataItem.getScheduleItem().getTimeStart();
+        String startTime = dataItem.getScheduleItems().get(0).getTimeStart();
         String date = dataItem.getDate();
-        String note = dataItem.getScheduleItem().getNote();
+        String note = dataItem.getScheduleItems().get(0).getNote();
         String error = null;
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("dd-MM-yyyy");
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
@@ -345,13 +352,13 @@ public class SetTimeFragment extends Fragment {
 
         Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("Note", dataItem.getScheduleItem().getNote());
-        nestedData.put("Status", dataItem.getScheduleItem().getStatus());
-        nestedData.put("Alarm", dataItem.getScheduleItem().getAlarm());
+        nestedData.put("Note", dataItem.getScheduleItems().get(0).getNote());
+        nestedData.put("Status", dataItem.getScheduleItems().get(0).getStatus());
+        nestedData.put("Alarm", dataItem.getScheduleItems().get(0).getAlarm());
 
-        docData.put(dataItem.getScheduleItem().getTimeStart(), nestedData);
+        docData.put(dataItem.getScheduleItems().get(0).getTimeStart(), nestedData);
 
-        db.collection(dataItem.getIdUser()).document(dataItem.getDate())
+        db.collection(idUser).document(dataItem.getDate())
                 .set(docData)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -371,13 +378,13 @@ public class SetTimeFragment extends Fragment {
     private void UpdateData(DataItem dataItem) {
         Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("Note", dataItem.getScheduleItem().getNote());
-        nestedData.put("Status", dataItem.getScheduleItem().getStatus());
-        nestedData.put("Alarm", dataItem.getScheduleItem().getAlarm());
+        nestedData.put("Note", dataItem.getScheduleItems().get(0).getNote());
+        nestedData.put("Status", dataItem.getScheduleItems().get(0).getStatus());
+        nestedData.put("Alarm", dataItem.getScheduleItems().get(0).getAlarm());
 
-        docData.put(dataItem.getScheduleItem().getTimeStart(), nestedData);
+        docData.put(dataItem.getScheduleItems().get(0).getTimeStart(), nestedData);
 
-        db.collection(dataItem.getIdUser()).document(dataItem.getDate())
+        db.collection(idUser).document(dataItem.getDate())
                 .update(docData)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -420,15 +427,14 @@ public class SetTimeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    createNewData = new DataItem();
-                    createNewScheduleItem = new ScheduleItem();
-                    createNewScheduleItem.setTimeStart(time);
-                    createNewData.setIdUser(idUser);
+                    scheduleItem.setTimeStart(time);
+                    scheduleItem.setNote(edNote.getText().toString());
+                    scheduleItem.setAlarm("on");
+                    scheduleItem.setStatus("Not Ready");
+                    createNewScheduleItem.add(scheduleItem);
+                    createNewData.setScheduleItems(createNewScheduleItem);
                     createNewData.setDate(dateMemory);
-                    createNewScheduleItem.setNote(edNote.getText().toString());
-                    createNewScheduleItem.setAlarm("on");
-                    createNewScheduleItem.setStatus("Not Ready");
-                    createNewData.setScheduleItem(createNewScheduleItem);
+
                     String checkLogic = CheckLogic(createNewData);
                     if (checkLogic == null) {
                         InsertData(createNewData);
@@ -441,13 +447,11 @@ public class SetTimeFragment extends Fragment {
                 }
             }
         });
-
     }
 
     //EndRegion
     //Realtime
     private void GetData() {
-        arrCreatedData = new ArrayList<>();
         final DocumentReference docRef = db.collection(idUser).document(dateMemory);
 
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -464,31 +468,30 @@ public class SetTimeFragment extends Fragment {
                 if (snapshot != null && snapshot.exists()) {
                     recyclerView.setVisibility(View.VISIBLE);
                     txtNoSchedule.setVisibility(View.INVISIBLE);
-                    arrCreatedData.clear();
+                    createdData = new DataItem();
+                    createdData.setDate(dateMemory);
+                    arrCreatedSchedule = new ArrayList<>();
                     Log.d(TAG, "Current data: " + snapshot.getData());
                     for (Map.Entry<String, Object> entry : Objects.requireNonNull(snapshot.getData()).entrySet()) {
-                        DataItem dataItem = new DataItem();
                         ScheduleItem scheduleItem = new ScheduleItem();
                         scheduleItem.setTimeStart(entry.getKey());
                         Map<String, String> nestedData = (Map<String, String>) entry.getValue();
                         scheduleItem.setNote(nestedData.get("Note"));
                         scheduleItem.setStatus(nestedData.get("Status"));
                         scheduleItem.setAlarm(nestedData.get("Alarm"));
-                        dataItem.setScheduleItem(scheduleItem);
-                        dataItem.setIdUser(idUser);
-                        dataItem.setDate(dateMemory);
-                        if (Objects.requireNonNull(nestedData.get("Status")).equals("Not Ready")) {
-                            arrCreatedData.add(dataItem);
+                        if ("Not Ready".equals(nestedData.get("Status"))) {
+                            arrCreatedSchedule.add(scheduleItem);
                         }
                     }
-                    if (arrCreatedData.isEmpty()) {
+                    Collections.sort(arrCreatedSchedule);
+                    createdData.setScheduleItems(arrCreatedSchedule);
+                    if (arrCreatedSchedule.isEmpty()) {
                         scrollView.setEnableScrolling(false);
                         recyclerView.setVisibility(View.INVISIBLE);
                         txtNoSchedule.setVisibility(View.VISIBLE);
                         DeleteDocIfNull(idUser, dateMemory);
                     } else {
-                        Collections.sort(arrCreatedData);
-                        ScheduleAdapter scheduleAdapter = new ScheduleAdapter(arrCreatedData, getContext());
+                        ScheduleAdapter scheduleAdapter = new ScheduleAdapter(createdData, getContext(), idUser);
                         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
                         recyclerView.setLayoutManager(layoutManager);
                         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -522,7 +525,6 @@ public class SetTimeFragment extends Fragment {
     }
 
     private void GetDataAlarm() {
-        arrDataAlarm = new ArrayList<>();
         db.collection(idUser)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -533,38 +535,43 @@ public class SetTimeFragment extends Fragment {
                             return;
                         }
 
+                        userItem = new UserItem();
+                        userItem.setIdUser(idUser);
+                        arrDataItem = new ArrayList<>();
                         for (DocumentSnapshot snapshot : Objects.requireNonNull(snapshots).getDocuments()) {
                             if (snapshot != null && snapshot.exists()) {
-                                arrDataAlarm.clear();
                                 Log.d(TAG, "Current data: " + snapshot.getData());
+                                DataItem dataItem = new DataItem();
                                 for (Map.Entry<String, Object> entry : Objects.requireNonNull(snapshot.getData()).entrySet()) {
-                                    DataItem dataItem = new DataItem();
+                                    arrScheduleItem = new ArrayList<>();
                                     ScheduleItem scheduleItem = new ScheduleItem();
                                     dataItem.setDate(snapshot.getId());
-                                    dataItem.setIdUser(idUser);
                                     scheduleItem.setTimeStart(entry.getKey());
                                     Map<String, String> nestedData = (Map<String, String>) entry.getValue();
                                     scheduleItem.setNote(nestedData.get("Note"));
                                     scheduleItem.setStatus(nestedData.get("Status"));
                                     scheduleItem.setAlarm(nestedData.get("Alarm"));
-                                    dataItem.setScheduleItem(scheduleItem);
+
                                     if ("on".equals(scheduleItem.getAlarm())) {
-                                        arrDataAlarm.add(dataItem);
-                                        sendDataAlarm = (SendDataAlarm) getActivity();
-                                        Objects.requireNonNull(sendDataAlarm).SendData(arrDataAlarm);
+                                        arrScheduleItem.add(scheduleItem);
+                                        Collections.sort(arrScheduleItem);
                                     }
                                 }
-                                if (arrDataAlarm.isEmpty()) {
-
-                                } else {
-                                    Collections.sort(arrDataAlarm);
+                                if(arrScheduleItem.size()!=0)
+                                {
+                                    dataItem.setScheduleItems(arrCreatedSchedule);
+                                    arrDataItem.add(dataItem);
                                 }
-
                             } else {
-
+                                Log.d(TAG, "NULL DATA");
                             }
                         }
-
+                        if(arrDataItem.size()!=0)
+                        {
+                            userItem.setDataItems(arrDataItem);
+                            sendDataAlarm = (SendDataAlarm) getActivity();
+                            Objects.requireNonNull(sendDataAlarm).SendData(userItem);
+                        }
                     }
                 });
     }

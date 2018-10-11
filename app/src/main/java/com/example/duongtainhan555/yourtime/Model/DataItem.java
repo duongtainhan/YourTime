@@ -6,27 +6,11 @@ import android.support.annotation.NonNull;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class DataItem implements Comparable<DataItem> {
-    private String idUser;
     private String date;
-    private ScheduleItem scheduleItem;
-
-    public ScheduleItem getScheduleItem() {
-        return scheduleItem;
-    }
-
-    public void setScheduleItem(ScheduleItem scheduleItem) {
-        this.scheduleItem = scheduleItem;
-    }
-
-    public String getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(String idUser) {
-        this.idUser = idUser;
-    }
+    private List<ScheduleItem> scheduleItems;
 
     public String getDate() {
         return date;
@@ -36,14 +20,22 @@ public class DataItem implements Comparable<DataItem> {
         this.date = date;
     }
 
+    public List<ScheduleItem> getScheduleItems() {
+        return scheduleItems;
+    }
+
+    public void setScheduleItems(List<ScheduleItem> scheduleItems) {
+        this.scheduleItems = scheduleItems;
+    }
+
     @Override
     public int compareTo(@NonNull DataItem o) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("dd-MM-yyyy");
         Date date1 = new Date();
         Date date2 = new Date();
         try {
-            date1 = formatTime.parse(getScheduleItem().getTimeStart());
-            date2 = formatTime.parse(o.getScheduleItem().getTimeStart());
+            date1 = formatTime.parse(getDate());
+            date2 = formatTime.parse(o.getDate());
         } catch (ParseException e) {
             e.printStackTrace();
         }

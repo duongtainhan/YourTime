@@ -54,15 +54,19 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
-    private List<DataItem> dataItems;
+    private DataItem dataItem;
+    private List<ScheduleItem> scheduleItems;
     private Context context;
     private Dialog dialogDelete;
     private Dialog dialogUpdate;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String idUser;
 
-    public ScheduleAdapter(List<DataItem> dataItems, Context context) {
-        this.dataItems = dataItems;
+    public ScheduleAdapter(DataItem dataItem, Context context, String idUser) {
+        this.dataItem = dataItem;
         this.context = context;
+        this.scheduleItems = dataItem.getScheduleItems();
+        this.idUser = idUser;
     }
 
     @NonNull
@@ -76,10 +80,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
-        final DataItem dataItem = dataItems.get(i);
-        viewHolder.txtStartTime.setText(dataItem.getScheduleItem().getTimeStart());
-        viewHolder.txtNote.setText(dataItem.getScheduleItem().getNote());
-            if("off".equals(dataItem.getScheduleItem().getAlarm()))
+        final ScheduleItem scheduleItem = scheduleItems.get(i);
+        viewHolder.txtStartTime.setText(scheduleItem.getTimeStart());
+        viewHolder.txtNote.setText(scheduleItem.getNote());
+            if("off".equals(scheduleItem.getAlarm()))
             {
                 viewHolder.imgOption.setImageResource(R.drawable.ic_off);
                 viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
@@ -92,7 +96,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
             }
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
-            String alarm = dataItem.getScheduleItem().getAlarm();
+            String alarm = scheduleItem.getAlarm();
             String enable = "off";
             @Override
             public void onClick(View v) {
@@ -104,7 +108,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 {
                     enable ="off";
                 }
-                UpdateAlarm(dataItem, enable);
+                UpdateAlarm(dataItem, enable,viewHolder.getAdapterPosition());
             }
 
         });
@@ -118,9 +122,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.itemUpdate) {
-                            ShowDialogUpdate(dataItem);
+                            ShowDialogUpdate(scheduleItem,viewHolder.getAdapterPosition());
                         } else if (item.getItemId() == R.id.itemDelete) {
-                            ShowDialogDelete(dataItem);
+                            ShowDialogDelete(dataItem,viewHolder.getAdapterPosition());
                         }
                         return true;
                     }
@@ -136,22 +140,22 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowDialogUpdate(dataItem);
+                ShowDialogUpdate(scheduleItem,viewHolder.getAdapterPosition());
             }
         });
     }
 
-    private void UpdateAlarm(DataItem dataItem, String alarm)
+    private void UpdateAlarm(DataItem dataItem, String alarm, int i)
     {
         final Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("Note", dataItem.getScheduleItem().getNote());
-        nestedData.put("Status", dataItem.getScheduleItem().getStatus());
+        nestedData.put("Note", dataItem.getScheduleItems().get(i).getNote());
+        nestedData.put("Status", dataItem.getScheduleItems().get(i).getStatus());
         nestedData.put("Alarm", alarm);
 
-        docData.put(dataItem.getScheduleItem().getTimeStart(), nestedData);
+        docData.put(dataItem.getScheduleItems().get(i).getTimeStart(), nestedData);
 
-        db.collection(dataItem.getIdUser()).document(dataItem.getDate())
+        db.collection(idUser).document(dataItem.getDate())
                 .update(docData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -204,7 +208,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         return error;
     }
 
-    private void ShowDialogUpdate(final DataItem dataItem) {
+    private void ShowDialogUpdate(final ScheduleItem scheduleItem, final int i) {
         dialogUpdate = new Dialog(context);
         dialogUpdate.setContentView(R.layout.dialog_update);
         Objects.requireNonNull(dialogUpdate.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -214,8 +218,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         final TextView txtStartTime = dialogUpdate.findViewById(R.id.txtStartTimeUpdate);
         final EditText edNoteUpdate = dialogUpdate.findViewById(R.id.edNoteUpdate);
         dialogUpdate.setCanceledOnTouchOutside(false);
-        txtStartTime.setText(dataItem.getScheduleItem().getTimeStart());
-        edNoteUpdate.setText(dataItem.getScheduleItem().getNote());
+        txtStartTime.setText(scheduleItem.getTimeStart());
+        edNoteUpdate.setText(scheduleItem.getNote());
         dialogUpdate.show();
         //Event
         btnUpdate.setOnClickListener(new View.OnClickListener() {
@@ -224,15 +228,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 try {
                     String error = CheckLogic(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString());
                     if (error == null) {
-                        if(dataItem.getScheduleItem().getTimeStart().equals(txtStartTime.getText().toString()))
+                        if(scheduleItem.getTimeStart().equals(txtStartTime.getText().toString()))
                         {
-                            UpdateData(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString());
+                            UpdateData(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString(),i);
                             dialogUpdate.cancel();
                         }
                         else
                         {
-                            UpdateData(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString());
-                            DeleteData(dataItem,false);
+                            UpdateData(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString(),i);
+                            DeleteData(dataItem,i,false);
                             dialogUpdate.cancel();
                         }
                     } else {
@@ -270,7 +274,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         });
     }
 
-    private void ShowDialogDelete(final DataItem dataItem) {
+    private void ShowDialogDelete(final DataItem dataItem, final int i) {
         dialogDelete = new Dialog(context);
         dialogDelete.setContentView(R.layout.dialog_delete);
         Button btnCancel = dialogDelete.findViewById(R.id.btnCancel);
@@ -288,7 +292,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DeleteData(dataItem,true);
+                DeleteData(dataItem,i,true);
                 dialogDelete.cancel();
             }
         });
@@ -315,16 +319,16 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
     }
 
-    private void UpdateData(DataItem dataItem, String startTime, String note) {
+    private void UpdateData(DataItem dataItem, String startTime, String note, int i) {
         final Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
         nestedData.put("Note", note);
         nestedData.put("Status", "Not Ready");
-        nestedData.put("Alarm", dataItem.getScheduleItem().getAlarm());
+        nestedData.put("Alarm", dataItem.getScheduleItems().get(i).getAlarm());
 
         docData.put(startTime, nestedData);
 
-        db.collection(dataItem.getIdUser()).document(dataItem.getDate())
+        db.collection(idUser).document(dataItem.getDate())
                 .update(docData)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -340,10 +344,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 });
     }
 
-    private void DeleteData(DataItem dataItem, final boolean show) {
-        DocumentReference docRef = db.collection(dataItem.getIdUser()).document(dataItem.getDate());
+    private void DeleteData(DataItem dataItem,int i, final boolean show) {
+        DocumentReference docRef = db.collection(idUser).document(dataItem.getDate());
         Map<String, Object> updates = new HashMap<>();
-        updates.put(dataItem.getScheduleItem().getTimeStart(), FieldValue.delete());
+        updates.put(dataItem.getScheduleItems().get(i).getTimeStart(), FieldValue.delete());
 
         docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -361,7 +365,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return dataItems.size();
+        return dataItem.getScheduleItems().size();
     }
 
 

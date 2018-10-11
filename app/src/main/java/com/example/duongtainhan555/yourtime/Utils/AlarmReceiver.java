@@ -5,9 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.example.duongtainhan555.yourtime.Service.RingtoneService;
+
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.e("ALARM","Im Alarm");
+        Log.d("ALARM","I'm Alarm");
+
+        Intent intentService = new Intent(context,RingtoneService.class);
+        context.startService(intentService);
+        //
     }
 }
