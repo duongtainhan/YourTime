@@ -542,8 +542,8 @@ public class SetTimeFragment extends Fragment {
                             if (snapshot != null && snapshot.exists()) {
                                 Log.d(TAG, "Current data: " + snapshot.getData());
                                 DataItem dataItem = new DataItem();
+                                arrScheduleItem = new ArrayList<>();
                                 for (Map.Entry<String, Object> entry : Objects.requireNonNull(snapshot.getData()).entrySet()) {
-                                    arrScheduleItem = new ArrayList<>();
                                     ScheduleItem scheduleItem = new ScheduleItem();
                                     dataItem.setDate(snapshot.getId());
                                     scheduleItem.setTimeStart(entry.getKey());
@@ -559,7 +559,7 @@ public class SetTimeFragment extends Fragment {
                                 }
                                 if(arrScheduleItem.size()!=0)
                                 {
-                                    dataItem.setScheduleItems(arrCreatedSchedule);
+                                    dataItem.setScheduleItems(arrScheduleItem);
                                     arrDataItem.add(dataItem);
                                 }
                             } else {
