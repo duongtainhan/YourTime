@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.AlarmActivity"
-    android:background="@color/material_background_alarm">
+    android:background="@color/material_background_alarm"
+    android:id="@+id/relativeAlarm">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -47,13 +48,13 @@
             android:layout_marginStart="@dimen/_30sdp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@id/imgLog"
+            android:layout_toStartOf="@id/imgLogAlarm"
             android:src="@drawable/ic_snooze"
             android:layout_marginBottom="@dimen/_10sdp"
             android:layout_alignBottom="@id/imgCat"/>
         <ImageView
             android:layout_marginBottom="@dimen/_10sdp"
-            android:id="@+id/imgLog"
+            android:id="@+id/imgLogAlarm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_log"
@@ -86,4 +87,4 @@
             app:button_image_disabled="@drawable/ic_run"/>
     </RelativeLayout>
 
-</ScrollView>
+</RelativeLayout>

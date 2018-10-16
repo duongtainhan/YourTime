@@ -1,6 +1,8 @@
 package com.example.duongtainhan555.yourtime.Activity;
 
+import android.app.WallpaperManager;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
@@ -20,7 +22,8 @@ import java.io.IOException;
 public class AlarmActivity extends AppCompatActivity {
 
     private MediaPlayer mMediaPlayer;
-    private ImageView imgLog;
+    ImageView imgLog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +32,7 @@ public class AlarmActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_alarm);
 
-        imgLog = findViewById(R.id.imgLog);
+        imgLog = findViewById(R.id.imgLogAlarm);
         imgLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -37,7 +40,6 @@ public class AlarmActivity extends AppCompatActivity {
                 finish();
             }
         });
-
         playSound(this, getAlarmUri());
 
     }
@@ -57,8 +59,6 @@ public class AlarmActivity extends AppCompatActivity {
         }
     }
 
-    //Get an alarm sound. Try for an alarm. If none set, try notification,
-    //Otherwise, ringtone.
     private Uri getAlarmUri() {
         Uri alert = RingtoneManager
                 .getDefaultUri(RingtoneManager.TYPE_ALARM);

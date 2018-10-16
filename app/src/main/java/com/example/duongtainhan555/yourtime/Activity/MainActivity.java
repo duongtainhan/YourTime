@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.provider.AlarmClock;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -58,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     }
 
-    //
     private void Init() {
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
@@ -123,9 +121,12 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
             @SuppressLint("SimpleDateFormat") String formatYear = new SimpleDateFormat("yyyy").format(date);
             int month = date.getMonth();
             int year = Integer.parseInt(formatYear);
+
             //Log.d("DAYYYY",hour+":"+min+"  "+day+"/"+month+"/"+year);
 
             Intent intent = new Intent(MainActivity.this, AlarmActivity.class);
+            //Note: put extra , truyền ngày và giờ qua AlarmActivity để set lại trạng thái của alarm
+            //Tham khảo hàm Update + Delete trong ScheduleAdapter
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.YEAR, year);
