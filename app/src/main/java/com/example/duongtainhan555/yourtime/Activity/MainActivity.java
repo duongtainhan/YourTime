@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.example.duongtainhan555.yourtime.Adapter.PagerAdapter;
 import com.example.duongtainhan555.yourtime.Interface.SendDataAlarm;
+import com.example.duongtainhan555.yourtime.Interface.SendItemAlarm;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.UserItem;
 import com.example.duongtainhan555.yourtime.R;
@@ -22,11 +23,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements SendDataAlarm {
@@ -38,11 +39,10 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     String idUser;
-    List<DataItem> arrDataAlarm;
     AlarmManager alarmManager;
-    List<Integer> listMomery;
     PendingIntent pendingIntent;
     boolean status = true;
+    private SendItemAlarm sendItemAlarm;
 
 
     @Override
@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
         //Init FireBase
         db = FirebaseFirestore.getInstance();
         GetIdUser();
-        //
     }
 
     private void GetIdUser() {
@@ -82,12 +81,11 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
                 if (tab.getPosition() == 1) {
-
+                    //Do anything when tab 2 selected.
                 } else if (tab.getPosition() == 2) {
-
-
+                    //Do anything when tab 3 selected.
                 } else {
-
+                    //Do anything when tab 1 selected.
                 }
             }
 
@@ -105,28 +103,24 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
     }
 
 
-
     private void SetAlarm(UserItem userItem) {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("dd-MM-yyyy");
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
         Date date;
         Date time;
-        Log.d("ALARM","DATA: "+userItem.getDataItems().get(0).getDate()+" "+userItem.getDataItems().get(0).getScheduleItems().get(0).getTimeStart());
+        Log.d("ALARM", "DATA: " + userItem.getDataItems().get(0).getDate() + " " + userItem.getDataItems().get(0).getScheduleItems().get(0).getTimeStart());
         try {
-            date = formatDate.parse(userItem.getDataItems().get(0).getDate());
-            time = formatTime.parse(userItem.getDataItems().get(0).getScheduleItems().get(0).getTimeStart());
+            String getTime = userItem.getDataItems().get(0).getScheduleItems().get(0).getTimeStart();
+            String getDate = userItem.getDataItems().get(0).getDate();
+            String getNote = userItem.getDataItems().get(0).getScheduleItems().get(0).getNote();
+            date = formatDate.parse(getDate);
+            time = formatTime.parse(getTime);
             int hour = time.getHours();
             int min = time.getMinutes();
             int day = date.getDate();
             @SuppressLint("SimpleDateFormat") String formatYear = new SimpleDateFormat("yyyy").format(date);
             int month = date.getMonth();
             int year = Integer.parseInt(formatYear);
-
-            //Log.d("DAYYYY",hour+":"+min+"  "+day+"/"+month+"/"+year);
-
-            Intent intent = new Intent(MainActivity.this, AlarmActivity.class);
-            //Note: put extra , truyền ngày và giờ qua AlarmActivity để set lại trạng thái của alarm
-            //Tham khảo hàm Update + Delete trong ScheduleAdapter
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.MONTH, month);
             calendar.set(Calendar.YEAR, year);
@@ -134,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
             calendar.set(Calendar.HOUR_OF_DAY, hour);
             calendar.set(Calendar.MINUTE, min);
             calendar.set(Calendar.SECOND, 0);
+            Intent intent = new Intent(MainActivity.this, AlarmActivity.class);
             pendingIntent = PendingIntent.getActivity(
                     this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
@@ -145,13 +140,10 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
     @Override
     public void SendData(UserItem userItem) {
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        if(status)
-        {
+        if (status) {
             SetAlarm(userItem);
             status = false;
-        }
-        else
-        {
+        } else {
             Objects.requireNonNull(alarmManager).cancel(pendingIntent);
             SetAlarm(userItem);
         }

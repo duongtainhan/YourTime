@@ -4,7 +4,6 @@
     package="com.example.duongtainhan555.yourtime">
 
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -27,7 +26,6 @@
             android:name=".Activity.MainActivity"
             android:hardwareAccelerated="true" />
         <activity android:name=".Activity.AlarmActivity"></activity>
-        <receiver android:name=".Utils.AlarmReceiver"/>
     </application>
 
 </manifest>
