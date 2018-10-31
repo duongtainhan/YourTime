@@ -105,6 +105,7 @@ public class SetTimeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_settime, container, false);
         //Init View
         InitView();
+        CheckReportExists();
         return view;
     }
 
@@ -131,7 +132,6 @@ public class SetTimeFragment extends Fragment {
         //
         SetDate(0, 0, 0);
         GetIdUser();
-        CheckReportExists();
         GetData();
     }
 
@@ -431,9 +431,9 @@ public class SetTimeFragment extends Fragment {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         UpdateData(dataItem);
-                        Log.d("EXISTS", "NO");
-                    } else {
                         Log.d("EXISTS", "YES");
+                    } else {
+                        Log.d("EXISTS", "NO");
                         SetData(dataItem);
                     }
                 } else {
@@ -469,7 +469,6 @@ public class SetTimeFragment extends Fragment {
                     createNewScheduleItem.add(scheduleItem);
                     createNewData.setScheduleItems(createNewScheduleItem);
                     createNewData.setDate(dateMemory);
-
                     String checkLogic = CheckLogic(createNewData);
                     if (checkLogic == null) {
                         UpdateNumberOfWork();

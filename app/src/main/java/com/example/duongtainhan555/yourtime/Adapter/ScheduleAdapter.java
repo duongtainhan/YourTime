@@ -91,7 +91,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             viewHolder.imgOption.setImageResource(R.drawable.ic_off);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
-            NotificationSchedule.CancelAlarm(context,AlarmReceiver.class,Integer.valueOf(scheduleItem.getRequestID()));
+            NotificationSchedule.CancelAlarm(context,AlarmReceiver.class,Integer.parseInt(scheduleItem.getRequestID()));
         }
         if ("on".equals(scheduleItem.getAlarm()) && "Not Ready".equals(scheduleItem.getStatus())) {
             viewHolder.imgOption.setImageResource(R.drawable.ic_on);
@@ -153,6 +153,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         nestedData.put("Note", dataItem.getScheduleItems().get(i).getNote());
         nestedData.put("Status", dataItem.getScheduleItems().get(i).getStatus());
         nestedData.put("Alarm", alarm);
+        nestedData.put("RequestID",dataItem.getScheduleItems().get(i).getRequestID());
 
         docData.put(dataItem.getScheduleItems().get(i).getTimeStart(), nestedData);
 
@@ -322,6 +323,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         nestedData.put("Note", note);
         nestedData.put("Status", "Not Ready");
         nestedData.put("Alarm", dataItem.getScheduleItems().get(i).getAlarm());
+        nestedData.put("RequestID",dataItem.getScheduleItems().get(i).getRequestID());
 
         docData.put(startTime, nestedData);
 

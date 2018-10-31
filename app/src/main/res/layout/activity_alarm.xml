@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f4eea8"
+    tools:context=".Activity.AlarmActivity">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="23:38"
+        android:textColor="#3f8a28"
+        android:textStyle="bold"
+        android:textSize="@dimen/_50ssp"
+        android:id="@+id/txtDate"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wednesday, October 31"
+        android:layout_below="@id/txtDate"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/_20ssp"
+        android:id="@+id/txtTime"/>
+    <ImageView
+        android:layout_below="@id/txtTime"
+        android:layout_width="@dimen/_140sdp"
+        android:layout_height="@dimen/_140sdp"
+        android:src="@drawable/cat"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/imgCat"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtNote"
+        android:text="Hom nay minh code android overnight luon !!! Ahihi"
+        android:layout_below="@id/imgCat"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:textSize="@dimen/_15ssp" />
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/imgStart"
+            android:layout_width="@dimen/_90sdp"
+            android:layout_height="@dimen/_90sdp"
+            android:src="@drawable/ic_start"/>
+        <ImageView
+            android:id="@+id/imgLog"
+            android:layout_marginStart="@dimen/_40sdp"
+            android:layout_centerInParent="true"
+            android:layout_toEndOf="@id/imgStart"
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="@dimen/_70sdp"
+            android:src="@drawable/ic_logout" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

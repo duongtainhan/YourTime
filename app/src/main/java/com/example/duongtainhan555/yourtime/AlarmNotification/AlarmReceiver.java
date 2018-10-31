@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.example.duongtainhan555.yourtime.Activity.AlarmActivity;
 import com.example.duongtainhan555.yourtime.Activity.MainActivity;
 
 public class AlarmReceiver extends BroadcastReceiver {
@@ -21,6 +22,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                 return;
             }
         }
-        NotificationSchedule.ShowNotification(context, MainActivity.class, requestID, title, note);
+        NotificationSchedule.ShowNotification(context, AlarmActivity.class, requestID, title, note);
     }
 }
