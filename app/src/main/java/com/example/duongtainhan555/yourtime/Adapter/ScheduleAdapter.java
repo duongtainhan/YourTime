@@ -133,7 +133,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 menuHelper.setForceShowIcon(true);
                 menuHelper.setGravity(Gravity.END);
                 menuHelper.show();
-                //popupMenu.show();
                 return true;
             }
         });
@@ -301,7 +300,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             dialogStatus.setCanceledOnTouchOutside(false);
             Objects.requireNonNull(dialogStatus.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             TextView txtStatus = dialogStatus.findViewById(textView);
-            dialogStatus.setCanceledOnTouchOutside(false);
+            //dialogStatus.setCanceledOnTouchOutside(false);
             txtStatus.setText(status);
             dialogStatus.show();
             Handler handler = new Handler();

@@ -46,6 +46,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
@@ -93,9 +94,6 @@ public class SetTimeFragment extends Fragment {
     private String dateMemory;
     private String dateCalendar;
     private String time;
-    private UserItem userItem;
-    private List<DataItem> arrDataItem;
-    private List<ScheduleItem> arrScheduleItem;
     //Init firebase
     private FirebaseFirestore db;
     FirebaseAuth firebaseAuth;
@@ -134,6 +132,7 @@ public class SetTimeFragment extends Fragment {
         //
         SetDate(0, 0, 0);
         GetIdUser();
+        CheckReportExists();
         GetData();
     }
 
@@ -324,6 +323,25 @@ public class SetTimeFragment extends Fragment {
         }
         return error;
     }
+    private void CheckReportExists()
+    {
+        DocumentReference docRef = db.collection(idUser).document("Report");
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d("Check_user", "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d("Check_user", "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
 
     //Create New Schedule
     private void ShowDialogStatus(int dialog, int textView, int status) {
@@ -408,7 +426,9 @@ public class SetTimeFragment extends Fragment {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         UpdateData(dataItem);
+                        Log.d("EXISTS","NO");
                     } else {
+                        Log.d("EXISTS","YES");
                         SetData(dataItem);
                     }
                 } else {
