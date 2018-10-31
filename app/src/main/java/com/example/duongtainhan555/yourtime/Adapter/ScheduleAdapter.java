@@ -33,6 +33,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.duongtainhan555.yourtime.Activity.MainActivity;
+import com.example.duongtainhan555.yourtime.AlarmNotification.NotificationSchedule;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
 import com.example.duongtainhan555.yourtime.R;
@@ -83,32 +84,31 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         final ScheduleItem scheduleItem = scheduleItems.get(i);
         viewHolder.txtStartTime.setText(scheduleItem.getTimeStart());
         viewHolder.txtNote.setText(scheduleItem.getNote());
-            if("off".equals(scheduleItem.getAlarm()))
-            {
-                viewHolder.imgOption.setImageResource(R.drawable.ic_off);
-                viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
-                viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
-            }
-            else
-            {
-                viewHolder.imgOption.setImageResource(R.drawable.ic_on);
-                viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
-                viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
-            }
+
+        //Set on-off alarm
+        if ("off".equals(scheduleItem.getAlarm()) && "Not Ready".equals(scheduleItem.getStatus())) {
+            viewHolder.imgOption.setImageResource(R.drawable.ic_off);
+            viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
+            viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
+        }
+        if ("on".equals(scheduleItem.getAlarm()) && "Not Ready".equals(scheduleItem.getStatus())) {
+            viewHolder.imgOption.setImageResource(R.drawable.ic_on);
+            viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
+            viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
+        }
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
             String alarm = scheduleItem.getAlarm();
             String enable = "off";
+
             @Override
             public void onClick(View v) {
-                if(alarm.equals("off"))
-                {
-                    enable ="on";
+                if (alarm.equals("off")) {
+                    enable = "on";
                 }
-                if(alarm.equals("on"))
-                {
-                    enable ="off";
+                if (alarm.equals("on")) {
+                    enable = "off";
                 }
-                UpdateAlarm(dataItem, enable,viewHolder.getAdapterPosition());
+                UpdateAlarm(dataItem, enable, viewHolder.getAdapterPosition());
             }
 
         });
@@ -122,9 +122,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.itemUpdate) {
-                            ShowDialogUpdate(scheduleItem,viewHolder.getAdapterPosition());
+                            ShowDialogUpdate(scheduleItem, viewHolder.getAdapterPosition());
                         } else if (item.getItemId() == R.id.itemDelete) {
-                            ShowDialogDelete(dataItem,viewHolder.getAdapterPosition());
+                            ShowDialogDelete(dataItem, viewHolder.getAdapterPosition());
                         }
                         return true;
                     }
@@ -140,13 +140,12 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowDialogUpdate(scheduleItem,viewHolder.getAdapterPosition());
+                ShowDialogUpdate(scheduleItem, viewHolder.getAdapterPosition());
             }
         });
     }
 
-    private void UpdateAlarm(DataItem dataItem, String alarm, int i)
-    {
+    private void UpdateAlarm(DataItem dataItem, String alarm, int i) {
         final Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
         nestedData.put("Note", dataItem.getScheduleItems().get(i).getNote());
@@ -228,15 +227,12 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 try {
                     String error = CheckLogic(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString());
                     if (error == null) {
-                        if(scheduleItem.getTimeStart().equals(txtStartTime.getText().toString()))
-                        {
-                            UpdateData(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString(),i);
+                        if (scheduleItem.getTimeStart().equals(txtStartTime.getText().toString())) {
+                            UpdateData(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString(), i);
                             dialogUpdate.cancel();
-                        }
-                        else
-                        {
-                            UpdateData(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString(),i);
-                            DeleteData(dataItem,i,false);
+                        } else {
+                            UpdateData(dataItem, txtStartTime.getText().toString(), edNoteUpdate.getText().toString(), i);
+                            DeleteData(dataItem, i, false);
                             dialogUpdate.cancel();
                         }
                     } else {
@@ -292,15 +288,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DeleteData(dataItem,i,true);
+                DeleteData(dataItem, i, true);
                 dialogDelete.cancel();
             }
         });
     }
 
     private void ShowDialogStatus(int dialog, int textView, int status, boolean show) {
-        if(show)
-        {
+        if (show) {
             final Dialog dialogStatus = new Dialog(context);
             dialogStatus.setContentView(dialog);
             dialogStatus.setCanceledOnTouchOutside(false);
@@ -333,18 +328,18 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_update,true);
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_update, true);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_update,true);
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_update, true);
                     }
                 });
     }
 
-    private void DeleteData(DataItem dataItem,int i, final boolean show) {
+    private void DeleteData(DataItem dataItem, int i, final boolean show) {
         DocumentReference docRef = db.collection(idUser).document(dataItem.getDate());
         Map<String, Object> updates = new HashMap<>();
         updates.put(dataItem.getScheduleItems().get(i).getTimeStart(), FieldValue.delete());
@@ -352,13 +347,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_delete,show);
+                ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_delete, show);
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_delete,show);
+                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_delete, show);
                     }
                 });
     }

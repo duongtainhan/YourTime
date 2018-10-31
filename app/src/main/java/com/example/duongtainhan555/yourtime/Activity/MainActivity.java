@@ -1,20 +1,13 @@
 package com.example.duongtainhan555.yourtime.Activity;
 
-import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.duongtainhan555.yourtime.Adapter.PagerAdapter;
-import com.example.duongtainhan555.yourtime.Interface.SendDataAlarm;
-import com.example.duongtainhan555.yourtime.Interface.SendItemAlarm;
-import com.example.duongtainhan555.yourtime.Model.DataItem;
-import com.example.duongtainhan555.yourtime.Model.UserItem;
 import com.example.duongtainhan555.yourtime.R;
 import com.example.duongtainhan555.yourtime.Fragment.ReportFragment;
 import com.example.duongtainhan555.yourtime.Fragment.SetTimeFragment;
@@ -23,14 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
-
-public class MainActivity extends AppCompatActivity implements SendDataAlarm {
+public class MainActivity extends AppCompatActivity{
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -39,11 +25,6 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     String idUser;
-    AlarmManager alarmManager;
-    PendingIntent pendingIntent;
-    boolean status = true;
-    private SendItemAlarm sendItemAlarm;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +34,6 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
         Init();
         //InitViewPager
         InitViewPager();
-        //SetAlarm
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
     }
 
     private void Init() {
@@ -100,52 +79,5 @@ public class MainActivity extends AppCompatActivity implements SendDataAlarm {
             }
         });
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-    }
-
-
-    private void SetAlarm(UserItem userItem) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("dd-MM-yyyy");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
-        Date date;
-        Date time;
-        Log.d("ALARM", "DATA: " + userItem.getDataItems().get(0).getDate() + " " + userItem.getDataItems().get(0).getScheduleItems().get(0).getTimeStart());
-        try {
-            String getTime = userItem.getDataItems().get(0).getScheduleItems().get(0).getTimeStart();
-            String getDate = userItem.getDataItems().get(0).getDate();
-            String getNote = userItem.getDataItems().get(0).getScheduleItems().get(0).getNote();
-            date = formatDate.parse(getDate);
-            time = formatTime.parse(getTime);
-            int hour = time.getHours();
-            int min = time.getMinutes();
-            int day = date.getDate();
-            @SuppressLint("SimpleDateFormat") String formatYear = new SimpleDateFormat("yyyy").format(date);
-            int month = date.getMonth();
-            int year = Integer.parseInt(formatYear);
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.MONTH, month);
-            calendar.set(Calendar.YEAR, year);
-            calendar.set(Calendar.DAY_OF_MONTH, day);
-            calendar.set(Calendar.HOUR_OF_DAY, hour);
-            calendar.set(Calendar.MINUTE, min);
-            calendar.set(Calendar.SECOND, 0);
-            Intent intent = new Intent(MainActivity.this, AlarmActivity.class);
-            pendingIntent = PendingIntent.getActivity(
-                    this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void SendData(UserItem userItem) {
-        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        if (status) {
-            SetAlarm(userItem);
-            status = false;
-        } else {
-            Objects.requireNonNull(alarmManager).cancel(pendingIntent);
-            SetAlarm(userItem);
-        }
     }
 }

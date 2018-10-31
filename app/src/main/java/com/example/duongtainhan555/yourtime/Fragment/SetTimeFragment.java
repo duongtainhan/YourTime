@@ -31,7 +31,6 @@ import android.widget.TimePicker;
 
 import com.example.duongtainhan555.yourtime.Adapter.ScheduleAdapter;
 import com.example.duongtainhan555.yourtime.CustomView.CustomScrollView;
-import com.example.duongtainhan555.yourtime.Interface.SendDataAlarm;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
 import com.example.duongtainhan555.yourtime.Model.UserItem;
@@ -97,7 +96,6 @@ public class SetTimeFragment extends Fragment {
     private UserItem userItem;
     private List<DataItem> arrDataItem;
     private List<ScheduleItem> arrScheduleItem;
-    private SendDataAlarm sendDataAlarm;
     //Init firebase
     private FirebaseFirestore db;
     FirebaseAuth firebaseAuth;
@@ -110,8 +108,6 @@ public class SetTimeFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_settime, container, false);
         //Init View
         InitView();
-        //Get Data Alarm
-        GetDataAlarm();
         return view;
     }
 
@@ -215,7 +211,7 @@ public class SetTimeFragment extends Fragment {
         dialogNotif.setContentView(R.layout.dialog_error_time);
         TextView txtNotif = dialogNotif.findViewById(R.id.txtNotif);
         txtNotif.setText(text);
-        dialogNotif.setCanceledOnTouchOutside(false);
+        //dialogNotif.setCanceledOnTouchOutside(false);
         Objects.requireNonNull(dialogNotif.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialogNotif.show();
         Button btnOk = dialogNotif.findViewById(R.id.btnOk);
@@ -328,15 +324,15 @@ public class SetTimeFragment extends Fragment {
         }
         return error;
     }
-    //Region Function: Create New Schedule
 
+    //Create New Schedule
     private void ShowDialogStatus(int dialog, int textView, int status) {
         final Dialog dialogStatus = new Dialog(Objects.requireNonNull(getContext()));
         dialogStatus.setContentView(dialog);
         Objects.requireNonNull(dialogStatus.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         TextView txtStatus = dialogStatus.findViewById(textView);
         txtStatus.setText(status);
-        dialogStatus.setCanceledOnTouchOutside(false);
+        //dialogStatus.setCanceledOnTouchOutside(false);
         dialogStatus.show();
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -448,9 +444,6 @@ public class SetTimeFragment extends Fragment {
             }
         });
     }
-
-    //EndRegion
-    //Realtime
     private void GetData() {
         final DocumentReference docRef = db.collection(idUser).document(dateMemory);
 
@@ -479,9 +472,8 @@ public class SetTimeFragment extends Fragment {
                         scheduleItem.setNote(nestedData.get("Note"));
                         scheduleItem.setStatus(nestedData.get("Status"));
                         scheduleItem.setAlarm(nestedData.get("Alarm"));
-                        if ("Not Ready".equals(nestedData.get("Status"))) {
-                            arrCreatedSchedule.add(scheduleItem);
-                        }
+                        //if ("Not Ready".equals(nestedData.get("Status"))) { }
+                        arrCreatedSchedule.add(scheduleItem);
                     }
                     Collections.sort(arrCreatedSchedule);
                     createdData.setScheduleItems(arrCreatedSchedule);
@@ -520,58 +512,6 @@ public class SetTimeFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error deleting document", e);
-                    }
-                });
-    }
-
-    private void GetDataAlarm() {
-        db.collection(idUser)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot snapshots,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "listen:error", e);
-                            return;
-                        }
-
-                        userItem = new UserItem();
-                        userItem.setIdUser(idUser);
-                        arrDataItem = new ArrayList<>();
-                        for (DocumentSnapshot snapshot : Objects.requireNonNull(snapshots).getDocuments()) {
-                            if (snapshot != null && snapshot.exists()) {
-                                Log.d(TAG, "Current data: " + snapshot.getData());
-                                DataItem dataItem = new DataItem();
-                                arrScheduleItem = new ArrayList<>();
-                                for (Map.Entry<String, Object> entry : Objects.requireNonNull(snapshot.getData()).entrySet()) {
-                                    ScheduleItem scheduleItem = new ScheduleItem();
-                                    dataItem.setDate(snapshot.getId());
-                                    scheduleItem.setTimeStart(entry.getKey());
-                                    Map<String, String> nestedData = (Map<String, String>) entry.getValue();
-                                    scheduleItem.setNote(nestedData.get("Note"));
-                                    scheduleItem.setStatus(nestedData.get("Status"));
-                                    scheduleItem.setAlarm(nestedData.get("Alarm"));
-
-                                    if ("on".equals(scheduleItem.getAlarm())) {
-                                        arrScheduleItem.add(scheduleItem);
-                                        Collections.sort(arrScheduleItem);
-                                    }
-                                }
-                                if(arrScheduleItem.size()!=0)
-                                {
-                                    dataItem.setScheduleItems(arrScheduleItem);
-                                    arrDataItem.add(dataItem);
-                                }
-                            } else {
-                                Log.d(TAG, "NULL DATA");
-                            }
-                        }
-                        if(arrDataItem.size()!=0)
-                        {
-                            userItem.setDataItems(arrDataItem);
-                            sendDataAlarm = (SendDataAlarm) getActivity();
-                            Objects.requireNonNull(sendDataAlarm).SendData(userItem);
-                        }
                     }
                 });
     }
