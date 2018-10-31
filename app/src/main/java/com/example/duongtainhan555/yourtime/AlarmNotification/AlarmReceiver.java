@@ -11,12 +11,16 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Log.d("ALARM", "onReceive: ");
-
         int requestID = Integer.valueOf(intent.getStringExtra("requestID"));
         String title = intent.getStringExtra("title");
         String note = intent.getStringExtra("note");
-        NotificationSchedule.ShowNotification(context, MainActivity.class, requestID,
-                title, note);
+        Log.d("ALARM", "onReceive: ");
+        if (intent.getAction() != null && context != null) {
+            if (intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)) {
+                NotificationSchedule.CancelAlarm(context,AlarmReceiver.class,requestID);
+                return;
+            }
+        }
+        NotificationSchedule.ShowNotification(context, MainActivity.class, requestID, title, note);
     }
 }

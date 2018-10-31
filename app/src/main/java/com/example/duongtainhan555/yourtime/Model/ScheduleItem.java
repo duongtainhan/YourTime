@@ -13,6 +13,15 @@ public class ScheduleItem implements Comparable<ScheduleItem> {
     private String note;
     private String status;
     private String alarm;
+    private String requestID;
+
+    public String getRequestID() {
+        return requestID;
+    }
+
+    public void setRequestID(String requestID) {
+        this.requestID = requestID;
+    }
 
     public String getAlarm() {
         return alarm;

@@ -33,6 +33,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.duongtainhan555.yourtime.Activity.MainActivity;
+import com.example.duongtainhan555.yourtime.AlarmNotification.AlarmReceiver;
 import com.example.duongtainhan555.yourtime.AlarmNotification.NotificationSchedule;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
@@ -90,11 +91,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             viewHolder.imgOption.setImageResource(R.drawable.ic_off);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
+            NotificationSchedule.CancelAlarm(context,AlarmReceiver.class,Integer.valueOf(scheduleItem.getRequestID()));
         }
         if ("on".equals(scheduleItem.getAlarm()) && "Not Ready".equals(scheduleItem.getStatus())) {
             viewHolder.imgOption.setImageResource(R.drawable.ic_on);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
+            NotificationSchedule.SetAlarm(context,AlarmReceiver.class,dataItem,i);
         }
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
             String alarm = scheduleItem.getAlarm();

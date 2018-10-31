@@ -32,8 +32,8 @@ import android.widget.TimePicker;
 import com.example.duongtainhan555.yourtime.Adapter.ScheduleAdapter;
 import com.example.duongtainhan555.yourtime.CustomView.CustomScrollView;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
+import com.example.duongtainhan555.yourtime.Model.Report;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
-import com.example.duongtainhan555.yourtime.Model.UserItem;
 import com.example.duongtainhan555.yourtime.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -46,8 +46,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -94,6 +92,7 @@ public class SetTimeFragment extends Fragment {
     private String dateMemory;
     private String dateCalendar;
     private String time;
+    private Report report;
     //Init firebase
     private FirebaseFirestore db;
     FirebaseAuth firebaseAuth;
@@ -323,22 +322,28 @@ public class SetTimeFragment extends Fragment {
         }
         return error;
     }
-    private void CheckReportExists()
-    {
-        DocumentReference docRef = db.collection(idUser).document("Report");
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+
+    private void CheckReportExists() {
+        final DocumentReference docRef = db.collection(idUser).document("Report");
+
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d("Check_user", "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d("Check_user", "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    return;
                 }
+                if (snapshot != null && snapshot.exists()) {
+                    report = new Report();
+                    report.setNumberOfWork(snapshot.getData().get("NumberOfWork").toString());
+                    Log.d("check_report", snapshot.getData().get("NumberOfWork").toString());
+                } else {
+                    Log.d("check_report", "NULL");
+                    Map<String, String> nestedData = new HashMap<>();
+                    nestedData.put("NumberOfWork", "0");
+                    db.collection(idUser).document("Report").set(nestedData);
+                }
+
             }
         });
     }
@@ -363,12 +368,12 @@ public class SetTimeFragment extends Fragment {
     }
 
     private void SetData(DataItem dataItem) {
-
         Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
         nestedData.put("Note", dataItem.getScheduleItems().get(0).getNote());
         nestedData.put("Status", dataItem.getScheduleItems().get(0).getStatus());
         nestedData.put("Alarm", dataItem.getScheduleItems().get(0).getAlarm());
+        nestedData.put("RequestID",dataItem.getScheduleItems().get(0).getRequestID());
 
         docData.put(dataItem.getScheduleItems().get(0).getTimeStart(), nestedData);
 
@@ -395,6 +400,7 @@ public class SetTimeFragment extends Fragment {
         nestedData.put("Note", dataItem.getScheduleItems().get(0).getNote());
         nestedData.put("Status", dataItem.getScheduleItems().get(0).getStatus());
         nestedData.put("Alarm", dataItem.getScheduleItems().get(0).getAlarm());
+        nestedData.put("RequestID",dataItem.getScheduleItems().get(0).getRequestID());
 
         docData.put(dataItem.getScheduleItems().get(0).getTimeStart(), nestedData);
 
@@ -413,7 +419,6 @@ public class SetTimeFragment extends Fragment {
                         ShowDialogStatus(R.layout.dialog_error_status, R.id.txtStatusError, R.string.status_error_write);
                     }
                 });
-
     }
 
     private void InsertData(final DataItem dataItem) {
@@ -426,9 +431,9 @@ public class SetTimeFragment extends Fragment {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         UpdateData(dataItem);
-                        Log.d("EXISTS","NO");
+                        Log.d("EXISTS", "NO");
                     } else {
-                        Log.d("EXISTS","YES");
+                        Log.d("EXISTS", "YES");
                         SetData(dataItem);
                     }
                 } else {
@@ -437,22 +442,37 @@ public class SetTimeFragment extends Fragment {
             }
         });
     }
+    private void UpdateNumberOfWork()
+    {
+        int request = Integer.valueOf(report.getNumberOfWork());
+        request++;
+        String requestID= String.valueOf(request);
+        Map<String, Object> nestedData = new HashMap<>();
+        nestedData.put("NumberOfWork", requestID);
+
+        db.collection(idUser).document("Report").update(nestedData);
+    }
 
     private void EventCreateEvent() {
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
+                    int request = Integer.valueOf(report.getNumberOfWork());
+                    request++;
+                    String requestID= String.valueOf(request);
                     scheduleItem.setTimeStart(time);
                     scheduleItem.setNote(edNote.getText().toString());
                     scheduleItem.setAlarm("on");
                     scheduleItem.setStatus("Not Ready");
+                    scheduleItem.setRequestID(requestID);
                     createNewScheduleItem.add(scheduleItem);
                     createNewData.setScheduleItems(createNewScheduleItem);
                     createNewData.setDate(dateMemory);
 
                     String checkLogic = CheckLogic(createNewData);
                     if (checkLogic == null) {
+                        UpdateNumberOfWork();
                         InsertData(createNewData);
                         dialog.cancel();
                     } else {
@@ -464,6 +484,7 @@ public class SetTimeFragment extends Fragment {
             }
         });
     }
+
     private void GetData() {
         final DocumentReference docRef = db.collection(idUser).document(dateMemory);
 
@@ -492,6 +513,7 @@ public class SetTimeFragment extends Fragment {
                         scheduleItem.setNote(nestedData.get("Note"));
                         scheduleItem.setStatus(nestedData.get("Status"));
                         scheduleItem.setAlarm(nestedData.get("Alarm"));
+                        scheduleItem.setRequestID(nestedData.get("RequestID"));
                         //if ("Not Ready".equals(nestedData.get("Status"))) { }
                         arrCreatedSchedule.add(scheduleItem);
                     }
