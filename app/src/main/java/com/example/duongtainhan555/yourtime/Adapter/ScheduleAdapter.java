@@ -92,12 +92,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
             NotificationSchedule.CancelAlarm(context,AlarmReceiver.class,Integer.parseInt(scheduleItem.getRequestID()));
+            Log.d("ALARM","SET_OFF");
         }
         if ("on".equals(scheduleItem.getAlarm()) && "Not Ready".equals(scheduleItem.getStatus())) {
             viewHolder.imgOption.setImageResource(R.drawable.ic_on);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
             NotificationSchedule.SetAlarm(context,AlarmReceiver.class,dataItem,i);
+            Log.d("ALARM","SET_ON");
         }
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
             String alarm = scheduleItem.getAlarm();
@@ -343,7 +345,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 });
     }
 
-    private void DeleteData(DataItem dataItem, int i, final boolean show) {
+    private void DeleteData(DataItem dataItem, final int i, final boolean show) {
         DocumentReference docRef = db.collection(idUser).document(dataItem.getDate());
         Map<String, Object> updates = new HashMap<>();
         updates.put(dataItem.getScheduleItems().get(i).getTimeStart(), FieldValue.delete());
@@ -352,6 +354,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusSuccess, R.string.status_success_delete, show);
+                UpdateNumberOfWork(i);
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -360,6 +363,16 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                         ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_delete, show);
                     }
                 });
+    }
+    private void UpdateNumberOfWork(int i)
+    {
+        int request = Integer.valueOf(dataItem.getScheduleItems().get(i).getRequestID());
+        request--;
+        String requestID= String.valueOf(request);
+        Map<String, Object> nestedData = new HashMap<>();
+        nestedData.put("NumberOfWork", requestID);
+
+        db.collection(idUser).document("Report").update(nestedData);
     }
 
     @Override

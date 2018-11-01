@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.example.duongtainhan555.yourtime.Activity.AlarmActivity;
-import com.example.duongtainhan555.yourtime.Activity.MainActivity;
 
 public class AlarmReceiver extends BroadcastReceiver {
     @Override

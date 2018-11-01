@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.R;
@@ -33,7 +34,6 @@ public class NotificationSchedule {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
         Date date;
         Date time;
-        //Log.d("ALARM", "DATA: " + userItem.getDataItems().get(0).getDate() + " " + userItem.getDataItems().get(0).getScheduleItems().get(0).getTimeStart());
         try {
             String getTime = dataItem.getScheduleItems().get(position).getTimeStart();
             String getDate = dataItem.getDate();
@@ -62,12 +62,15 @@ public class NotificationSchedule {
                     intent, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            Log.d("ALARM","SET_ALARM");
+            Log.d("ALARM","DATE: "+day+"/"+monthPlus+"/"+year+"  "+hour+":"+min);
         } catch (ParseException e) {
             e.printStackTrace();
         }
     }
     public static void CancelAlarm(Context context,Class<?> cls, int requestID)
     {
+        Log.d("ALARM","CANCEL_ALARM");
         ComponentName receiver = new ComponentName(context, cls);
         PackageManager pm = context.getPackageManager();
 
@@ -105,6 +108,7 @@ public class NotificationSchedule {
             notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Log.d("ALARM","1");
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel mChannel = notificationManager.getNotificationChannel(id);
             if (mChannel == null) {
@@ -128,10 +132,10 @@ public class NotificationSchedule {
                     .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
         }
         else {
+            Log.d("ALARM","2");
             builder = new NotificationCompat.Builder(context, id);
             intent = new Intent(context, AlarmReceiver.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
             builder.setContentTitle(title)
                     .setSmallIcon(android.R.drawable.ic_popup_reminder)
                     .setContentText(note)

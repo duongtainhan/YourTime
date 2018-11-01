@@ -26,7 +26,7 @@
             android:name=".Activity.MainActivity"
             android:hardwareAccelerated="true" />
 
-        <receiver android:name=".AlarmNotification.AlarmReceiver">
+        <receiver android:name=".AlarmNotification.AlarmReceiver"
             android:enabled="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
