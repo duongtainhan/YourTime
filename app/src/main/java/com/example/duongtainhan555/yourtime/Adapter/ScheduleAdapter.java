@@ -87,18 +87,21 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         viewHolder.txtNote.setText(scheduleItem.getNote());
 
         //Set on-off alarm
-        if ("off".equals(scheduleItem.getAlarm()) && "Not Ready".equals(scheduleItem.getStatus())) {
+        if ("off".equals(scheduleItem.getAlarm())) {
             viewHolder.imgOption.setImageResource(R.drawable.ic_off);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
-            NotificationSchedule.CancelAlarm(context,AlarmReceiver.class,Integer.parseInt(scheduleItem.getRequestID()));
+            if("Not Ready".equals(scheduleItem.getStatus()))
+            {
+                NotificationSchedule.CancelAlarm(context,AlarmReceiver.class,Integer.parseInt(scheduleItem.getRequestID()));
+            }
             Log.d("ALARM","SET_OFF");
         }
         if ("on".equals(scheduleItem.getAlarm()) && "Not Ready".equals(scheduleItem.getStatus())) {
             viewHolder.imgOption.setImageResource(R.drawable.ic_on);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
-            NotificationSchedule.SetAlarm(context,AlarmReceiver.class,dataItem,i);
+            NotificationSchedule.SetAlarm(context,AlarmReceiver.class,dataItem,i,idUser);
             Log.d("ALARM","SET_ON");
         }
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
