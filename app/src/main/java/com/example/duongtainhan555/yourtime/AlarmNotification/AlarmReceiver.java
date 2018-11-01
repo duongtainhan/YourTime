@@ -30,7 +30,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
         */
         NotificationSchedule.UpdateAlarm(idUser,date,time,note,requestCode);
-        NotificationSchedule.CancelAlarm(context,AlarmReceiver.class,requestID);
         NotificationSchedule.ShowNotification(context, AlarmActivity.class, requestID, title, note);
     }
 }

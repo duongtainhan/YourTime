@@ -16,6 +16,8 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+
+import com.example.duongtainhan555.yourtime.Constant;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -74,7 +76,7 @@ public class NotificationSchedule {
                     Integer.valueOf(dataItem.getScheduleItems().get(position).getRequestID()),
                     intent, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
             Log.d("ALARM","SET_ALARM");
             Log.d("ALARM","DATE: "+day+"/"+monthPlus+"/"+year+"  "+hour+":"+min);
         } catch (ParseException e) {
@@ -104,10 +106,10 @@ public class NotificationSchedule {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("Note", note);
-        nestedData.put("Status", "missed");
-        nestedData.put("Alarm", "off");
-        nestedData.put("RequestID",requestID);
+        nestedData.put(Constant.note, note);
+        nestedData.put(Constant.status, Constant.missedStatus);
+        nestedData.put(Constant.alarm, Constant.offAlarm);
+        nestedData.put(Constant.requestID,requestID);
 
         docData.put(time, nestedData);
         db.collection(idUser).document(date)
@@ -126,7 +128,6 @@ public class NotificationSchedule {
 
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(requestID, PendingIntent.FLAG_UPDATE_CURRENT);
         //
-        final int NOTIFY_ID = 0;
         String id = "id_chanel";
         Intent intent;
         intent = new Intent(context, AlarmReceiver.class);
@@ -172,6 +173,6 @@ public class NotificationSchedule {
         }
         Notification notification = builder.build();
         notification.flags = Notification.FLAG_INSISTENT;
-        notificationManager.notify(NOTIFY_ID, notification);
+        notificationManager.notify(requestID, notification);
     }
 }

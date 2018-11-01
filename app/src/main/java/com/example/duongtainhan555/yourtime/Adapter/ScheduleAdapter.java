@@ -92,89 +92,72 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             viewHolder.imgOption.setImageResource(R.drawable.ic_off);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
-            if(Constant.notReadyStatus.equals(scheduleItem.getStatus()))
-            {
-                NotificationSchedule.CancelAlarm(context,AlarmReceiver.class,Integer.parseInt(scheduleItem.getRequestID()));
+            if (Constant.notReadyStatus.equals(scheduleItem.getStatus())) {
+                NotificationSchedule.CancelAlarm(context, AlarmReceiver.class, Integer.parseInt(scheduleItem.getRequestID()));
+                Log.d("ALARM", "SET_OFF");
             }
-            Log.d("ALARM","SET_OFF");
         }
         if (Constant.onAlarm.equals(scheduleItem.getAlarm()) && Constant.notReadyStatus.equals(scheduleItem.getStatus())) {
             viewHolder.imgOption.setImageResource(R.drawable.ic_on);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
-            NotificationSchedule.SetAlarm(context,AlarmReceiver.class,dataItem,i,idUser);
-            Log.d("ALARM","SET_ON");
+            NotificationSchedule.SetAlarm(context, AlarmReceiver.class, dataItem, i, idUser);
+            Log.d("ALARM", "SET_ON: position"+Integer.valueOf(dataItem.getScheduleItems().get(i).getRequestID()));
         }
-        viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
-            String alarm = scheduleItem.getAlarm();
-            String enable = Constant.offAlarm;
 
-            @Override
-            public void onClick(View v) {
-                if (alarm.equals(Constant.offAlarm)) {
-                    enable = Constant.onAlarm;
-                }
-                if (alarm.equals(Constant.onAlarm)) {
-                    enable = Constant.offAlarm;
-                }
-                UpdateAlarm(dataItem, enable, viewHolder.getAdapterPosition());
-            }
-
-        });
         viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            String status = scheduleItem.getStatus();
+
             @SuppressLint("RestrictedApi")
             @Override
             public boolean onLongClick(View v) {
-                PopupMenu popupMenu = new PopupMenu(context, v);
-                popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.itemUpdate) {
-                            ShowDialogUpdate(scheduleItem, viewHolder.getAdapterPosition());
-                        } else if (item.getItemId() == R.id.itemDelete) {
-                            ShowDialogDelete(dataItem, viewHolder.getAdapterPosition());
+                if (Constant.notReadyStatus.equals(status)) {
+                    PopupMenu popupMenu = new PopupMenu(context, v);
+                    popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if (item.getItemId() == R.id.itemUpdate) {
+                                ShowDialogUpdate(scheduleItem, viewHolder.getAdapterPosition());
+                            } else if (item.getItemId() == R.id.itemDelete) {
+                                ShowDialogDelete(dataItem, viewHolder.getAdapterPosition());
+                            }
+                            return true;
                         }
-                        return true;
-                    }
-                });
-                @SuppressLint("RestrictedApi") MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popupMenu.getMenu(), v);
-                menuHelper.setForceShowIcon(true);
-                menuHelper.setGravity(Gravity.END);
-                menuHelper.show();
+                    });
+                    @SuppressLint("RestrictedApi") MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popupMenu.getMenu(), v);
+                    menuHelper.setForceShowIcon(true);
+                    menuHelper.setGravity(Gravity.END);
+                    menuHelper.show();
+                } else {
+                    PopupMenu popupMenu = new PopupMenu(context, v);
+                    popupMenu.getMenuInflater().inflate(R.menu.popup_menu_status_missed, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if (item.getItemId() == R.id.itemDeleteNote) {
+                                ShowDialogDelete(dataItem, viewHolder.getAdapterPosition());
+                            }
+                            return true;
+                        }
+                    });
+                    @SuppressLint("RestrictedApi") MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popupMenu.getMenu(), v);
+                    menuHelper.setForceShowIcon(true);
+                    menuHelper.setGravity(Gravity.END);
+                    menuHelper.show();
+                }
+
                 return true;
             }
         });
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            String status = scheduleItem.getStatus();
             @Override
             public void onClick(View v) {
-                ShowDialogUpdate(scheduleItem, viewHolder.getAdapterPosition());
+                if (Constant.notReadyStatus.equals(status))
+                    ShowDialogUpdate(scheduleItem, viewHolder.getAdapterPosition());
             }
         });
-    }
-
-    private void UpdateAlarm(DataItem dataItem, String alarm, int i) {
-        final Map<String, Object> docData = new HashMap<>();
-        Map<String, String> nestedData = new HashMap<>();
-        nestedData.put(Constant.note, dataItem.getScheduleItems().get(i).getNote());
-        nestedData.put(Constant.status, dataItem.getScheduleItems().get(i).getStatus());
-        nestedData.put(Constant.alarm, alarm);
-        nestedData.put(Constant.requestID,dataItem.getScheduleItems().get(i).getRequestID());
-
-        docData.put(dataItem.getScheduleItems().get(i).getTimeStart(), nestedData);
-
-        db.collection(idUser).document(dataItem.getDate())
-                .update(docData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                    }
-                });
     }
 
     private void ShowTimePicker(final TextView textView) {
@@ -329,7 +312,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         nestedData.put(Constant.note, note);
         nestedData.put(Constant.status, Constant.notReadyStatus);
         nestedData.put(Constant.alarm, dataItem.getScheduleItems().get(i).getAlarm());
-        nestedData.put(Constant.requestID,dataItem.getScheduleItems().get(i).getRequestID());
+        nestedData.put(Constant.requestID, dataItem.getScheduleItems().get(i).getRequestID());
 
         docData.put(startTime, nestedData);
 
@@ -368,11 +351,11 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                     }
                 });
     }
-    private void UpdateNumberOfWork(int i)
-    {
+
+    private void UpdateNumberOfWork(int i) {
         int request = Integer.valueOf(dataItem.getScheduleItems().get(i).getRequestID());
         request--;
-        String requestID= String.valueOf(request);
+        String requestID = String.valueOf(request);
         Map<String, Object> nestedData = new HashMap<>();
         nestedData.put(Constant.numberOfWork, requestID);
 
