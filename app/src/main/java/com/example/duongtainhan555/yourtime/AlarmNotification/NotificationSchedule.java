@@ -21,6 +21,7 @@ import com.example.duongtainhan555.yourtime.Constant;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -70,6 +71,8 @@ public class NotificationSchedule {
             intent.putExtra("idUser",idUser);
             intent.putExtra("date",dataItem.getDate());
             intent.putExtra("time",dataItem.getScheduleItems().get(position).getTimeStart());
+            intent.putExtra("alarm",dataItem.getScheduleItems().get(position).getAlarm());
+            intent.putExtra("status",dataItem.getScheduleItems().get(position).getStatus());
             intent.putExtra("note",dataItem.getScheduleItems().get(position).getNote());
             intent.putExtra("requestID",dataItem.getScheduleItems().get(position).getRequestID());
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
@@ -115,23 +118,30 @@ public class NotificationSchedule {
         db.collection(idUser).document(date)
                 .update(docData);
     }
-    public static void ShowNotification(Context context, Class<?> cls, int requestID, String title, String note)
+    public static void ShowNotification(Context context, Class<?> cls,
+                                        String idUser, String date, String time, String alarm,
+                                        String status, String requestCode, String title, String note)
     {
+        int requestID = Integer.valueOf(requestCode);
         //
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 
-        Intent notificationIntent = new Intent(context, cls);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent intent = new Intent(context, cls);
+        intent.putExtra("idUser",idUser);
+        intent.putExtra("date",date);
+        intent.putExtra("time",time);
+        intent.putExtra("alarm",alarm);
+        intent.putExtra("status",status);
+        intent.putExtra("requestID",requestCode);
+        intent.putExtra("note",note);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(cls);
-        stackBuilder.addNextIntent(notificationIntent);
+        stackBuilder.addNextIntent(intent);
 
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(requestID, PendingIntent.FLAG_UPDATE_CURRENT);
         //
         String id = "id_chanel";
-        Intent intent;
-        intent = new Intent(context, AlarmReceiver.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder builder;
         if (notificationManager == null) {
@@ -172,7 +182,7 @@ public class NotificationSchedule {
                     .setPriority(Notification.PRIORITY_HIGH);
         }
         Notification notification = builder.build();
-        notification.flags = Notification.FLAG_INSISTENT;
+        notification.flags = Notification.FLAG_INSISTENT|Notification.FLAG_AUTO_CANCEL;
         notificationManager.notify(requestID, notification);
     }
 }

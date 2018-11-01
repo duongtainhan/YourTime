@@ -16,11 +16,11 @@ public class AlarmReceiver extends BroadcastReceiver {
         String idUser = intent.getStringExtra("idUser");
         String date = intent.getStringExtra("date");
         String time = intent.getStringExtra("time");
+        String alarm = intent.getStringExtra("alarm");
+        String status = intent.getStringExtra("status");
         String note = intent.getStringExtra("note");
         String requestCode = intent.getStringExtra("requestID");
-        int requestID = Integer.valueOf(requestCode);
         String title = intent.getStringExtra("title");
-
         /*
         if (intent.getAction() != null && context != null) {
             if (intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)) {
@@ -30,6 +30,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
         */
         NotificationSchedule.UpdateAlarm(idUser,date,time,note,requestCode);
-        NotificationSchedule.ShowNotification(context, AlarmActivity.class, requestID, title, note);
+        NotificationSchedule.ShowNotification(context, AlarmActivity.class,idUser,date,time,
+                alarm,status,requestCode,title,note);
     }
 }
