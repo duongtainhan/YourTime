@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.example.duongtainhan555.yourtime.Activity.MainActivity;
 import com.example.duongtainhan555.yourtime.AlarmNotification.AlarmReceiver;
 import com.example.duongtainhan555.yourtime.AlarmNotification.NotificationSchedule;
+import com.example.duongtainhan555.yourtime.Constant;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;
 import com.example.duongtainhan555.yourtime.R;
@@ -87,17 +88,17 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         viewHolder.txtNote.setText(scheduleItem.getNote());
 
         //Set on-off alarm
-        if ("off".equals(scheduleItem.getAlarm())) {
+        if (Constant.offAlarm.equals(scheduleItem.getAlarm())) {
             viewHolder.imgOption.setImageResource(R.drawable.ic_off);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
-            if("Not Ready".equals(scheduleItem.getStatus()))
+            if(Constant.notReadyStatus.equals(scheduleItem.getStatus()))
             {
                 NotificationSchedule.CancelAlarm(context,AlarmReceiver.class,Integer.parseInt(scheduleItem.getRequestID()));
             }
             Log.d("ALARM","SET_OFF");
         }
-        if ("on".equals(scheduleItem.getAlarm()) && "Not Ready".equals(scheduleItem.getStatus())) {
+        if (Constant.onAlarm.equals(scheduleItem.getAlarm()) && Constant.notReadyStatus.equals(scheduleItem.getStatus())) {
             viewHolder.imgOption.setImageResource(R.drawable.ic_on);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
@@ -106,15 +107,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         }
         viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
             String alarm = scheduleItem.getAlarm();
-            String enable = "off";
+            String enable = Constant.offAlarm;
 
             @Override
             public void onClick(View v) {
-                if (alarm.equals("off")) {
-                    enable = "on";
+                if (alarm.equals(Constant.offAlarm)) {
+                    enable = Constant.onAlarm;
                 }
-                if (alarm.equals("on")) {
-                    enable = "off";
+                if (alarm.equals(Constant.onAlarm)) {
+                    enable = Constant.offAlarm;
                 }
                 UpdateAlarm(dataItem, enable, viewHolder.getAdapterPosition());
             }
@@ -155,10 +156,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     private void UpdateAlarm(DataItem dataItem, String alarm, int i) {
         final Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("Note", dataItem.getScheduleItems().get(i).getNote());
-        nestedData.put("Status", dataItem.getScheduleItems().get(i).getStatus());
-        nestedData.put("Alarm", alarm);
-        nestedData.put("RequestID",dataItem.getScheduleItems().get(i).getRequestID());
+        nestedData.put(Constant.note, dataItem.getScheduleItems().get(i).getNote());
+        nestedData.put(Constant.status, dataItem.getScheduleItems().get(i).getStatus());
+        nestedData.put(Constant.alarm, alarm);
+        nestedData.put(Constant.requestID,dataItem.getScheduleItems().get(i).getRequestID());
 
         docData.put(dataItem.getScheduleItems().get(i).getTimeStart(), nestedData);
 
@@ -325,10 +326,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     private void UpdateData(DataItem dataItem, String startTime, String note, int i) {
         final Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("Note", note);
-        nestedData.put("Status", "Not Ready");
-        nestedData.put("Alarm", dataItem.getScheduleItems().get(i).getAlarm());
-        nestedData.put("RequestID",dataItem.getScheduleItems().get(i).getRequestID());
+        nestedData.put(Constant.note, note);
+        nestedData.put(Constant.status, Constant.notReadyStatus);
+        nestedData.put(Constant.alarm, dataItem.getScheduleItems().get(i).getAlarm());
+        nestedData.put(Constant.requestID,dataItem.getScheduleItems().get(i).getRequestID());
 
         docData.put(startTime, nestedData);
 
@@ -373,9 +374,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         request--;
         String requestID= String.valueOf(request);
         Map<String, Object> nestedData = new HashMap<>();
-        nestedData.put("NumberOfWork", requestID);
+        nestedData.put(Constant.numberOfWork, requestID);
 
-        db.collection(idUser).document("Report").update(nestedData);
+        db.collection(idUser).document(Constant.report).update(nestedData);
     }
 
     @Override

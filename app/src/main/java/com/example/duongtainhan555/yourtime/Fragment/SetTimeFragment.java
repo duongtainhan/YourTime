@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.duongtainhan555.yourtime.Adapter.ScheduleAdapter;
+import com.example.duongtainhan555.yourtime.Constant;
 import com.example.duongtainhan555.yourtime.CustomView.CustomScrollView;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.Report;
@@ -324,7 +325,7 @@ public class SetTimeFragment extends Fragment {
     }
 
     private void CheckReportExists() {
-        final DocumentReference docRef = db.collection(idUser).document("Report");
+        final DocumentReference docRef = db.collection(idUser).document(Constant.report);
 
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -335,13 +336,13 @@ public class SetTimeFragment extends Fragment {
                 }
                 if (snapshot != null && snapshot.exists()) {
                     report = new Report();
-                    report.setNumberOfWork(snapshot.getData().get("NumberOfWork").toString());
-                    Log.d("check_report", snapshot.getData().get("NumberOfWork").toString());
+                    report.setNumberOfWork(snapshot.getData().get(Constant.numberOfWork).toString());
+                    Log.d("check_report", snapshot.getData().get(Constant.numberOfWork).toString());
                 } else {
                     Log.d("check_report", "NULL");
                     Map<String, String> nestedData = new HashMap<>();
-                    nestedData.put("NumberOfWork", "0");
-                    db.collection(idUser).document("Report").set(nestedData);
+                    nestedData.put(Constant.numberOfWork, "0");
+                    db.collection(idUser).document(Constant.report).set(nestedData);
                 }
 
             }
@@ -370,10 +371,10 @@ public class SetTimeFragment extends Fragment {
     private void SetData(DataItem dataItem) {
         Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("Note", dataItem.getScheduleItems().get(0).getNote());
-        nestedData.put("Status", dataItem.getScheduleItems().get(0).getStatus());
-        nestedData.put("Alarm", dataItem.getScheduleItems().get(0).getAlarm());
-        nestedData.put("RequestID",dataItem.getScheduleItems().get(0).getRequestID());
+        nestedData.put(Constant.note, dataItem.getScheduleItems().get(0).getNote());
+        nestedData.put(Constant.status, dataItem.getScheduleItems().get(0).getStatus());
+        nestedData.put(Constant.alarm, dataItem.getScheduleItems().get(0).getAlarm());
+        nestedData.put(Constant.requestID,dataItem.getScheduleItems().get(0).getRequestID());
 
         docData.put(dataItem.getScheduleItems().get(0).getTimeStart(), nestedData);
 
@@ -397,10 +398,10 @@ public class SetTimeFragment extends Fragment {
     private void UpdateData(DataItem dataItem) {
         Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
-        nestedData.put("Note", dataItem.getScheduleItems().get(0).getNote());
-        nestedData.put("Status", dataItem.getScheduleItems().get(0).getStatus());
-        nestedData.put("Alarm", dataItem.getScheduleItems().get(0).getAlarm());
-        nestedData.put("RequestID",dataItem.getScheduleItems().get(0).getRequestID());
+        nestedData.put(Constant.note, dataItem.getScheduleItems().get(0).getNote());
+        nestedData.put(Constant.status, dataItem.getScheduleItems().get(0).getStatus());
+        nestedData.put(Constant.alarm, dataItem.getScheduleItems().get(0).getAlarm());
+        nestedData.put(Constant.requestID,dataItem.getScheduleItems().get(0).getRequestID());
 
         docData.put(dataItem.getScheduleItems().get(0).getTimeStart(), nestedData);
 
@@ -448,9 +449,9 @@ public class SetTimeFragment extends Fragment {
         request++;
         String requestID= String.valueOf(request);
         Map<String, Object> nestedData = new HashMap<>();
-        nestedData.put("NumberOfWork", requestID);
+        nestedData.put(Constant.numberOfWork, requestID);
 
-        db.collection(idUser).document("Report").update(nestedData);
+        db.collection(idUser).document(Constant.report).update(nestedData);
     }
 
     private void EventCreateEvent() {
@@ -463,8 +464,8 @@ public class SetTimeFragment extends Fragment {
                     String requestID= String.valueOf(request);
                     scheduleItem.setTimeStart(time);
                     scheduleItem.setNote(edNote.getText().toString());
-                    scheduleItem.setAlarm("on");
-                    scheduleItem.setStatus("Not Ready");
+                    scheduleItem.setAlarm(Constant.onAlarm);
+                    scheduleItem.setStatus(Constant.notReadyStatus);
                     scheduleItem.setRequestID(requestID);
                     createNewScheduleItem.add(scheduleItem);
                     createNewData.setScheduleItems(createNewScheduleItem);
@@ -509,10 +510,10 @@ public class SetTimeFragment extends Fragment {
                         ScheduleItem scheduleItem = new ScheduleItem();
                         scheduleItem.setTimeStart(entry.getKey());
                         Map<String, String> nestedData = (Map<String, String>) entry.getValue();
-                        scheduleItem.setNote(nestedData.get("Note"));
-                        scheduleItem.setStatus(nestedData.get("Status"));
-                        scheduleItem.setAlarm(nestedData.get("Alarm"));
-                        scheduleItem.setRequestID(nestedData.get("RequestID"));
+                        scheduleItem.setNote(nestedData.get(Constant.note));
+                        scheduleItem.setStatus(nestedData.get(Constant.status));
+                        scheduleItem.setAlarm(nestedData.get(Constant.alarm));
+                        scheduleItem.setRequestID(nestedData.get(Constant.requestID));
                         //if ("Not Ready".equals(nestedData.get("Status"))) { }
                         arrCreatedSchedule.add(scheduleItem);
                     }
