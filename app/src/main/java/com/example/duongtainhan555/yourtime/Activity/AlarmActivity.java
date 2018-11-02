@@ -119,7 +119,7 @@ public class AlarmActivity extends AppCompatActivity {
     }
     private void ShowDialogExit()
     {
-        final Dialog dialogExit dialogExit = new Dialog(AlarmActivity.this);
+        final Dialog dialogExit = new Dialog(AlarmActivity.this);
         dialogExit.setContentView(R.layout.dialog_exit);
         dialogExit.setCanceledOnTouchOutside(false);
         Objects.requireNonNull(dialogExit.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
