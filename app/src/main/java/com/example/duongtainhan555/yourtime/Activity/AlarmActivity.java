@@ -2,6 +2,8 @@ package com.example.duongtainhan555.yourtime.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,11 +20,26 @@ import java.util.Date;
 
 public class AlarmActivity extends AppCompatActivity {
 
-    private TextView txtDate, txtTime, txtNote;
+    private TextView txtDate, txtTime, txtNote, txtCountTime;
     private String idUser, date, time, alarm, status, note, requestID;
     private RelativeLayout relativeGoMenu;
     private ImageView imgLog, imgStartStop;
 
+    //Set Count Time
+    long startTime = 0;
+    Handler timerHandler = new Handler();
+    Runnable timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            startTime++;
+            long hours = startTime/3600;
+            long minutes = startTime%3600/60;
+            long seconds = startTime%3600%60;
+
+            txtCountTime.setText(String.format("%02d:%02d:%02d",hours, minutes, seconds));
+            timerHandler.postDelayed(this, 1000);
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +64,7 @@ public class AlarmActivity extends AppCompatActivity {
     }
 
     private void InitView() {
+        txtCountTime = findViewById(R.id.txtCountTime);
         txtDate = findViewById(R.id.txtDate);
         txtTime = findViewById(R.id.txtTime);
         txtNote = findViewById(R.id.txtNote);
@@ -87,8 +105,7 @@ public class AlarmActivity extends AppCompatActivity {
         imgLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
-                System.exit(0);
+               finishAndRemoveTask();
             }
         });
     }
@@ -98,17 +115,38 @@ public class AlarmActivity extends AppCompatActivity {
             boolean start = false;
             @Override
             public void onClick(View v) {
+                txtCountTime.setVisibility(View.VISIBLE);
                 if (!start) {
                     //Start: On
+                    timerHandler.postDelayed(timerRunnable, 0);
                     imgStartStop.setImageResource(R.drawable.stop);
                     start = true;
                 } else {
                     //Start: Off - OnStop
+                    timerHandler.removeCallbacks(timerRunnable);
                     imgStartStop.setImageResource(R.drawable.ic_start);
                     start = false;
                 }
             }
         });
     }
+    @Override
+    protected void onPause() {
+        Log.d("ALARM","onPause");
+        super.onPause();
+        timerHandler.removeCallbacks(timerRunnable);
+        imgStartStop.setImageResource(R.drawable.ic_start);
+    }
 
+    @Override
+    protected void onStop() {
+        Log.d("ALARM","onStop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d("ALARM","onDestroy");
+        super.onDestroy();
+    }
 }
