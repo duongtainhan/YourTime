@@ -1,12 +1,16 @@
 package com.example.duongtainhan555.yourtime.Activity;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -20,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class AlarmActivity extends AppCompatActivity {
 
@@ -108,7 +113,30 @@ public class AlarmActivity extends AppCompatActivity {
         imgLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               finishAndRemoveTask();
+               ShowDialogExit();
+            }
+        });
+    }
+    private void ShowDialogExit()
+    {
+        final Dialog dialogExit = new Dialog(getApplicationContext());
+        dialogExit.setContentView(R.layout.dialog_exit);
+        dialogExit.setCanceledOnTouchOutside(false);
+        Objects.requireNonNull(dialogExit.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialogExit.setCanceledOnTouchOutside(false);
+        dialogExit.show();
+        Button btnExit = dialogExit.findViewById(R.id.btnExit);
+        Button btnGoBack = dialogExit.findViewById(R.id.btnGoBack);
+        btnExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishAndRemoveTask();
+            }
+        });
+        btnGoBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogExit.cancel();
             }
         });
     }
