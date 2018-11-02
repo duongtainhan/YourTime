@@ -186,7 +186,7 @@ public class SetTimeFragment extends Fragment {
                 EventClickCancel();
                 //
                 Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.setCanceledOnTouchOutside(false);
+                //dialog.setCanceledOnTouchOutside(false);
                 dialog.show();
                 createNewData = new DataItem();
                 createNewScheduleItem = new ArrayList<>();

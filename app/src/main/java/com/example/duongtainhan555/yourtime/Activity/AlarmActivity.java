@@ -119,17 +119,18 @@ public class AlarmActivity extends AppCompatActivity {
     }
     private void ShowDialogExit()
     {
-        final Dialog dialogExit = new Dialog(getApplicationContext());
+        final Dialog dialogExit dialogExit = new Dialog(AlarmActivity.this);
         dialogExit.setContentView(R.layout.dialog_exit);
         dialogExit.setCanceledOnTouchOutside(false);
         Objects.requireNonNull(dialogExit.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialogExit.setCanceledOnTouchOutside(false);
-        dialogExit.show();
         Button btnExit = dialogExit.findViewById(R.id.btnExit);
         Button btnGoBack = dialogExit.findViewById(R.id.btnGoBack);
+        dialogExit.show();
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialogExit.cancel();
                 finishAndRemoveTask();
             }
         });
@@ -171,11 +172,16 @@ public class AlarmActivity extends AppCompatActivity {
     }
     private void UpdateCountTime()
     {
+        String statusUpdated = (String) txtCountTime.getText();
+        if(statusUpdated.equals("00:00:00"))
+        {
+            statusUpdated = "missed";
+        }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final Map<String, Object> docData = new HashMap<>();
         Map<String, String> nestedData = new HashMap<>();
         nestedData.put(Constant.note, note);
-        nestedData.put(Constant.status, (String) txtCountTime.getText());
+        nestedData.put(Constant.status, statusUpdated);
         nestedData.put(Constant.alarm, Constant.offAlarm);
         nestedData.put(Constant.requestID, requestID);
 
