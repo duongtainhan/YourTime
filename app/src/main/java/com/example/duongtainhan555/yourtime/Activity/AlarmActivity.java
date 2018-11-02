@@ -2,7 +2,6 @@ package com.example.duongtainhan555.yourtime.Activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,11 +11,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.duongtainhan555.yourtime.Constant;
 import com.example.duongtainhan555.yourtime.R;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AlarmActivity extends AppCompatActivity {
 
@@ -133,19 +136,29 @@ public class AlarmActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         Log.d("ALARM","onPause");
+        UpdateCountTime();
         super.onPause();
         timerHandler.removeCallbacks(timerRunnable);
         imgStartStop.setImageResource(R.drawable.ic_start);
     }
+    private void UpdateCountTime()
+    {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final Map<String, Object> docData = new HashMap<>();
+        Map<String, String> nestedData = new HashMap<>();
+        nestedData.put(Constant.note, note);
+        nestedData.put(Constant.status, (String) txtCountTime.getText());
+        nestedData.put(Constant.alarm, Constant.offAlarm);
+        nestedData.put(Constant.requestID, requestID);
 
-    @Override
-    protected void onStop() {
-        Log.d("ALARM","onStop");
-        super.onStop();
+        docData.put(time, nestedData);
+
+        db.collection(idUser).document(date).update(docData);
+        Log.d("ALARM","Update_Count_Time");
     }
-
     @Override
     protected void onDestroy() {
+        UpdateCountTime();
         Log.d("ALARM","onDestroy");
         super.onDestroy();
     }
