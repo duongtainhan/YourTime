@@ -21,7 +21,7 @@ public class AlarmActivity extends AppCompatActivity {
     private TextView txtDate, txtTime, txtNote;
     private String idUser, date, time, alarm, status, note, requestID;
     private RelativeLayout relativeGoMenu;
-    private ImageView imgLog;
+    private ImageView imgLog, imgStartStop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +35,24 @@ public class AlarmActivity extends AppCompatActivity {
         EventObject();
     }
 
+    private void GetIntent() {
+        idUser = getIntent().getStringExtra("idUser");
+        date = getIntent().getStringExtra("date");
+        time = getIntent().getStringExtra("time");
+        alarm = getIntent().getStringExtra("alarm");
+        status = getIntent().getStringExtra("status");
+        note = getIntent().getStringExtra("note");
+        requestID = getIntent().getStringExtra("requestID");
+        Log.d("ALARM_PASS_DATE", date);
+    }
+
     private void InitView() {
         txtDate = findViewById(R.id.txtDate);
         txtTime = findViewById(R.id.txtTime);
         txtNote = findViewById(R.id.txtNote);
         relativeGoMenu = findViewById(R.id.relativeGoMenu);
         imgLog = findViewById(R.id.imgLog);
+        imgStartStop = findViewById(R.id.imgStartStop);
         //
         txtTime.setText(time);
         txtNote.setText(note);
@@ -54,23 +66,24 @@ public class AlarmActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    private void EventObject()
-    {
+
+    private void EventObject() {
         EventClickGoMenu();
         EventClickLogOut();
+        EventClickStartStop();
     }
-    private void EventClickGoMenu()
-    {
+
+    private void EventClickGoMenu() {
         relativeGoMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentGoMenu = new Intent(AlarmActivity.this,MainActivity.class);
+                Intent intentGoMenu = new Intent(AlarmActivity.this, MainActivity.class);
                 startActivity(intentGoMenu);
             }
         });
     }
-    private void EventClickLogOut()
-    {
+
+    private void EventClickLogOut() {
         imgLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,15 +92,23 @@ public class AlarmActivity extends AppCompatActivity {
             }
         });
     }
-    private void GetIntent()
-    {
-        idUser = getIntent().getStringExtra("idUser");
-        date = getIntent().getStringExtra("date");
-        time = getIntent().getStringExtra("time");
-        alarm = getIntent().getStringExtra("alarm");
-        status = getIntent().getStringExtra("status");
-        note = getIntent().getStringExtra("note");
-        requestID = getIntent().getStringExtra("requestID");
-        Log.d("ALARM_PASS_DATE",date);
+
+    private void EventClickStartStop() {
+        imgStartStop.setOnClickListener(new View.OnClickListener() {
+            boolean start = false;
+            @Override
+            public void onClick(View v) {
+                if (!start) {
+                    //Start: On
+                    imgStartStop.setImageResource(R.drawable.stop);
+                    start = true;
+                } else {
+                    //Start: Off - OnStop
+                    imgStartStop.setImageResource(R.drawable.ic_start);
+                    start = false;
+                }
+            }
+        });
     }
+
 }

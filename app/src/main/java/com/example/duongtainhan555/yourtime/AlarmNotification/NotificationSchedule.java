@@ -16,9 +16,11 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.example.duongtainhan555.yourtime.Constant;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
+import com.example.duongtainhan555.yourtime.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
@@ -134,7 +136,7 @@ public class NotificationSchedule {
         intent.putExtra("status",status);
         intent.putExtra("requestID",requestCode);
         intent.putExtra("note",note);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addParentStack(cls);
         stackBuilder.addNextIntent(intent);
@@ -169,6 +171,7 @@ public class NotificationSchedule {
                     .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
         }
         else {
+
             Log.d("ALARM","2");
             builder = new NotificationCompat.Builder(context, id);
             builder.setContentTitle(title)
@@ -181,6 +184,7 @@ public class NotificationSchedule {
                     .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
                     .setPriority(Notification.PRIORITY_HIGH);
         }
+
         Notification notification = builder.build();
         notification.flags = Notification.FLAG_INSISTENT|Notification.FLAG_AUTO_CANCEL;
         notificationManager.notify(requestID, notification);

@@ -1,18 +1,13 @@
 package com.example.duongtainhan555.yourtime.Adapter;
 
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.CardView;
@@ -30,9 +25,7 @@ import android.support.v7.widget.PopupMenu;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import com.example.duongtainhan555.yourtime.Activity.MainActivity;
 import com.example.duongtainhan555.yourtime.AlarmNotification.AlarmReceiver;
 import com.example.duongtainhan555.yourtime.AlarmNotification.NotificationSchedule;
 import com.example.duongtainhan555.yourtime.Constant;
