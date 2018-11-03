@@ -17,6 +17,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
+}
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
 }
 
 dependencies {
@@ -30,9 +40,8 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.google.firebase:firebase-auth:16.0.3'
     implementation 'com.google.android.gms:play-services-auth:16.0.0'
-    implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.google.firebase:firebase-firestore:17.1.0'
-    implementation 'com.ebanx:swipe-button:0.4.0'
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
     //
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

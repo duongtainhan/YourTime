@@ -167,8 +167,9 @@ public class AlarmActivity extends AppCompatActivity {
         Log.d("ALARM","onPause");
         UpdateCountTime();
         super.onPause();
-        timerHandler.removeCallbacks(timerRunnable);
-        imgStartStop.setImageResource(R.drawable.ic_start);
+        //stop runnable if want power saved, but count time don't work
+        //timerHandler.removeCallbacks(timerRunnable);
+        //imgStartStop.setImageResource(R.drawable.ic_start);
     }
     private void UpdateCountTime()
     {

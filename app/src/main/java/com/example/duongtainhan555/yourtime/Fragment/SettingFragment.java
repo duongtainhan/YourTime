@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.duongtainhan555.yourtime.Activity.LoginActivity;
 import com.example.duongtainhan555.yourtime.R;
 import com.google.android.gms.auth.api.Auth;
@@ -22,7 +23,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -85,8 +85,7 @@ public class SettingFragment extends Fragment implements GoogleApiClient.OnConne
     private void SetUserData(FirebaseUser user) {
         txtName.setText(user.getDisplayName());
         txtEmail.setText(user.getEmail());
-        Picasso.get().load(user.getPhotoUrl()).into(imgAvatar);
-
+        Glide.with(this).load(user.getPhotoUrl()).into(imgAvatar);
     }
 
     private void LogOut() {
