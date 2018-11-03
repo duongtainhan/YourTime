@@ -34,15 +34,15 @@ public class AlarmActivity extends AppCompatActivity {
     private ImageView imgLog, imgStartStop;
 
     //Set Count Time
-    long startTime = 0;
+    long countTime = 0;
     Handler timerHandler = new Handler();
     Runnable timerRunnable = new Runnable() {
         @Override
         public void run() {
-            startTime++;
-            long hours = startTime/3600;
-            long minutes = startTime%3600/60;
-            long seconds = startTime%3600%60;
+            countTime++;
+            long hours = countTime/3600;
+            long minutes = countTime%3600/60;
+            long seconds = countTime%3600%60;
 
             txtCountTime.setText(String.format("%02d:%02d:%02d",hours, minutes, seconds));
             timerHandler.postDelayed(this, 1000);
@@ -167,9 +167,13 @@ public class AlarmActivity extends AppCompatActivity {
         Log.d("ALARM","onPause");
         UpdateCountTime();
         super.onPause();
-        //stop runnable if want power saved, but count time don't work
-        //timerHandler.removeCallbacks(timerRunnable);
-        //imgStartStop.setImageResource(R.drawable.ic_start);
+        //stop runnable if want power saved, count time don't work
+        timerHandler.removeCallbacks(timerRunnable);
+        imgStartStop.setImageResource(R.drawable.ic_start);
+        String action = "com.example.duongtainhan555.intents";
+        Intent intentBroadcast = new Intent(action);
+        intentBroadcast.putExtra("countTime",String.valueOf(countTime));
+        sendBroadcast(intentBroadcast);
     }
     private void UpdateCountTime()
     {
@@ -191,6 +195,13 @@ public class AlarmActivity extends AppCompatActivity {
         db.collection(idUser).document(date).update(docData);
         Log.d("ALARM","Update_Count_Time");
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("ALARM","onResume");
+    }
+
     @Override
     protected void onDestroy() {
         UpdateCountTime();

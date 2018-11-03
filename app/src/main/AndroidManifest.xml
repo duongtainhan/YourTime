@@ -32,6 +32,11 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".AlarmNotification.CountTimeReceiver">
+            <intent-filter>
+                <action android:name="com.example.duongtainhan555.intents" />
+            </intent-filter>
+        </receiver>
 
         <activity android:name=".Activity.AlarmActivity"></activity>
     </application>

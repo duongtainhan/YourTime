@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -87,6 +88,17 @@ public class NotificationSchedule {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+    public static void RepeatCountTime(Context context, Class<?> cls)
+    {
+        Intent intent = new Intent(context, cls);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+                0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime(),
+                1000,
+                pendingIntent);
     }
     public static void CancelAlarm(Context context,Class<?> cls, int requestID)
     {
