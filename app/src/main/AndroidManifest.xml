@@ -26,15 +26,10 @@
             android:name=".Activity.MainActivity"
             android:hardwareAccelerated="true" />
 
-        <receiver android:name=".AlarmNotification.AlarmReceiver"
+        <receiver android:name=".Receiver_Notification.AlarmReceiver"
             android:enabled="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".AlarmNotification.CountTimeReceiver">
-            <intent-filter>
-                <action android:name="com.example.duongtainhan555.intents" />
             </intent-filter>
         </receiver>
 

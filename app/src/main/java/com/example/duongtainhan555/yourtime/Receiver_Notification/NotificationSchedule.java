@@ -1,4 +1,4 @@
-package com.example.duongtainhan555.yourtime.AlarmNotification;
+package com.example.duongtainhan555.yourtime.Receiver_Notification;
 
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
@@ -17,14 +17,11 @@ import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import com.example.duongtainhan555.yourtime.Constant;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
-import com.example.duongtainhan555.yourtime.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

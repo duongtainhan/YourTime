@@ -26,8 +26,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.example.duongtainhan555.yourtime.AlarmNotification.AlarmReceiver;
-import com.example.duongtainhan555.yourtime.AlarmNotification.NotificationSchedule;
+import com.example.duongtainhan555.yourtime.Receiver_Notification.AlarmReceiver;
+import com.example.duongtainhan555.yourtime.Receiver_Notification.NotificationSchedule;
 import com.example.duongtainhan555.yourtime.Constant;
 import com.example.duongtainhan555.yourtime.Model.DataItem;
 import com.example.duongtainhan555.yourtime.Model.ScheduleItem;

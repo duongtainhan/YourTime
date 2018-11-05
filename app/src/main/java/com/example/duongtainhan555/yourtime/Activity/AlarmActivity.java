@@ -32,33 +32,43 @@ public class AlarmActivity extends AppCompatActivity {
     private String idUser, date, time, alarm, status, note, requestID;
     private RelativeLayout relativeGoMenu;
     private ImageView imgLog, imgStartStop;
+    private long countTime = 0;
+    private Runnable timerRunnable;
+    private Handler timerHandler;
 
-    //Set Count Time
-    long countTime = 0;
-    Handler timerHandler = new Handler();
-    Runnable timerRunnable = new Runnable() {
-        @Override
-        public void run() {
-            countTime++;
-            long hours = countTime/3600;
-            long minutes = countTime%3600/60;
-            long seconds = countTime%3600%60;
-
-            txtCountTime.setText(String.format("%02d:%02d:%02d",hours, minutes, seconds));
-            timerHandler.postDelayed(this, 1000);
-        }
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
+
         //GetIntent
         GetIntent();
         //InitView
         InitView();
+        //Set Count Time
+        CountTimeRunnable();
         //Event
         EventObject();
     }
+
+    private void CountTimeRunnable()
+    {
+
+        timerHandler = new Handler();
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                countTime++;
+                long hours = countTime/3600;
+                long minutes = countTime%3600/60;
+                long seconds = countTime%3600%60;
+
+                txtCountTime.setText(String.format("%02d:%02d:%02d",hours, minutes, seconds));
+                timerHandler.postDelayed(this, 1000);
+            }
+        };
+    }
+
 
     private void GetIntent() {
         idUser = getIntent().getStringExtra("idUser");
@@ -149,12 +159,12 @@ public class AlarmActivity extends AppCompatActivity {
             public void onClick(View v) {
                 txtCountTime.setVisibility(View.VISIBLE);
                 if (!start) {
-                    //Start: On
+                    //countTime: on start
                     timerHandler.postDelayed(timerRunnable, 0);
                     imgStartStop.setImageResource(R.drawable.stop);
                     start = true;
                 } else {
-                    //Start: Off - OnStop
+                    //countTime: on stop
                     timerHandler.removeCallbacks(timerRunnable);
                     imgStartStop.setImageResource(R.drawable.ic_start);
                     start = false;
@@ -162,25 +172,13 @@ public class AlarmActivity extends AppCompatActivity {
             }
         });
     }
-    @Override
-    protected void onPause() {
-        Log.d("ALARM","onPause");
-        UpdateCountTime();
-        super.onPause();
-        //stop runnable if want power saved, count time don't work
-        timerHandler.removeCallbacks(timerRunnable);
-        imgStartStop.setImageResource(R.drawable.ic_start);
-        String action = "com.example.duongtainhan555.intents";
-        Intent intentBroadcast = new Intent(action);
-        intentBroadcast.putExtra("countTime",String.valueOf(countTime));
-        sendBroadcast(intentBroadcast);
-    }
+
     private void UpdateCountTime()
     {
         String statusUpdated = (String) txtCountTime.getText();
         if(statusUpdated.equals("00:00:00"))
         {
-            statusUpdated = "missed";
+            statusUpdated = Constant.missedStatus;
         }
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final Map<String, Object> docData = new HashMap<>();
@@ -195,11 +193,26 @@ public class AlarmActivity extends AppCompatActivity {
         db.collection(idUser).document(date).update(docData);
         Log.d("ALARM","Update_Count_Time");
     }
-
+    @Override
+    protected void onPause() {
+        Log.d("ALARM","onPause");
+        UpdateCountTime();
+        super.onPause();
+        //stop runnable if want power saved, count time don't work
+        //timerHandler.removeCallbacks(timerRunnable);
+        //imgStartStop.setImageResource(R.drawable.ic_start);
+    }
     @Override
     protected void onResume() {
         super.onResume();
         Log.d("ALARM","onResume");
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("ALARM","onStop");
     }
 
     @Override

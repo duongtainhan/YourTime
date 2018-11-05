@@ -1,4 +1,4 @@
-package com.example.duongtainhan555.yourtime.AlarmNotification;
+package com.example.duongtainhan555.yourtime.Receiver_Notification;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
