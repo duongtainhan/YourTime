@@ -86,17 +86,7 @@ public class NotificationSchedule {
             e.printStackTrace();
         }
     }
-    public static void RepeatCountTime(Context context, Class<?> cls)
-    {
-        Intent intent = new Intent(context, cls);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
-                0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime(),
-                1000,
-                pendingIntent);
-    }
+
     public static void CancelAlarm(Context context,Class<?> cls, int requestID)
     {
         Log.d("ALARM","CANCEL_ALARM");
