@@ -1,12 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.github.mikephil.charting.charts.BarChart
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:id="@+id/barChart">
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/material_background_orange">
+            <TextView
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/of_the_day"
+                android:textColor="#4a7c87"
+                android:textStyle="bold"
+                android:textSize="@dimen/_20ssp"/>
+        </LinearLayout>
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pieChart"
+            android:layout_width="match_parent"
+            android:layout_height="400dp">
 
-    </com.github.mikephil.charting.charts.BarChart>
+        </com.github.mikephil.charting.charts.PieChart>
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/material_background_orange">
+            <TextView
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OF THE WEEK"
+                android:textColor="#4a7c87"
+                android:textStyle="bold"
+                android:textSize="@dimen/_20ssp"/>
+        </LinearLayout>
+        <com.github.mikephil.charting.charts.BarChart
+            android:layout_below="@id/pieChart"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:id="@+id/barChart">
+
+        </com.github.mikephil.charting.charts.BarChart>
+    </LinearLayout>
+
+</ScrollView>
