@@ -16,4 +16,5 @@
     <color name="material_text">#101010</color>
     <color name="material_background">#fafafa</color>
     <color name="text_alarm_note">#3d8727</color>
+    <color name="text_pie_chart">#4a7c87</color>
 </resources>

@@ -48,4 +48,5 @@
     <string name="exit">Exit</string>
     <string name="go_back">Go back</string>
     <string name="of_the_day">OF THE DAY</string>
+    <string name="the_last_seven_days">THE LAST SEVEN DAYS</string>
 </resources>

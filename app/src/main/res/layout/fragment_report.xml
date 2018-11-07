@@ -25,7 +25,6 @@
             android:id="@+id/pieChart"
             android:layout_width="match_parent"
             android:layout_height="400dp">
-
         </com.github.mikephil.charting.charts.PieChart>
 
         <LinearLayout
@@ -38,18 +37,18 @@
                 android:layout_marginStart="@dimen/_10sdp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="OF THE WEEK"
+                android:text="@string/the_last_seven_days"
                 android:textColor="#4a7c87"
                 android:textStyle="bold"
                 android:textSize="@dimen/_20ssp"/>
         </LinearLayout>
+
         <com.github.mikephil.charting.charts.BarChart
-            android:layout_below="@id/pieChart"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:id="@+id/barChart">
-
         </com.github.mikephil.charting.charts.BarChart>
+
     </LinearLayout>
 
 </ScrollView>
