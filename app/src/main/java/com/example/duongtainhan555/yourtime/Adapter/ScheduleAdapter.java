@@ -326,6 +326,10 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     }
 
     private void DeleteData(DataItem dataItem, final int i, final boolean show) {
+        if(Constant.onAlarm.equals(dataItem.getScheduleItems().get(i).getAlarm()))
+        {
+            NotificationSchedule.CancelAlarm(context, AlarmReceiver.class, Integer.parseInt(dataItem.getScheduleItems().get(i).getRequestID()));
+        }
         DocumentReference docRef = db.collection(idUser).document(dataItem.getDate());
         Map<String, Object> updates = new HashMap<>();
         updates.put(dataItem.getScheduleItems().get(i).getTimeStart(), FieldValue.delete());
