@@ -82,7 +82,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
         //Set on-off alarm
         if (Constant.offAlarm.equals(scheduleItem.getAlarm())) {
-            viewHolder.imgOption.setImageResource(R.drawable.ic_off);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#e8e8e8"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#e8e8e8"));
             if (Constant.notReadyStatus.equals(scheduleItem.getStatus())) {
@@ -91,7 +90,6 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             }
         }
         if (Constant.onAlarm.equals(scheduleItem.getAlarm()) && Constant.notReadyStatus.equals(scheduleItem.getStatus())) {
-            viewHolder.imgOption.setImageResource(R.drawable.ic_on);
             viewHolder.txtStartTime.setTextColor(Color.parseColor("#757575"));
             viewHolder.txtNote.setTextColor(Color.parseColor("#757575"));
             NotificationSchedule.SetAlarm(context, AlarmReceiver.class, dataItem, i, idUser);
@@ -149,6 +147,49 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
             public void onClick(View v) {
                 if (Constant.notReadyStatus.equals(status))
                     ShowDialogUpdate(scheduleItem, viewHolder.getAdapterPosition());
+            }
+        });
+        viewHolder.imgOption.setOnClickListener(new View.OnClickListener() {
+            String status = scheduleItem.getStatus();
+
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onClick(View v) {
+                if (Constant.notReadyStatus.equals(status)) {
+                    PopupMenu popupMenu = new PopupMenu(context, v);
+                    popupMenu.getMenuInflater().inflate(R.menu.popup_menu, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if (item.getItemId() == R.id.itemUpdate) {
+                                ShowDialogUpdate(scheduleItem, viewHolder.getAdapterPosition());
+                            } else if (item.getItemId() == R.id.itemDelete) {
+                                ShowDialogDelete(dataItem, viewHolder.getAdapterPosition());
+                            }
+                            return true;
+                        }
+                    });
+                    @SuppressLint("RestrictedApi") MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popupMenu.getMenu(), v);
+                    menuHelper.setForceShowIcon(true);
+                    menuHelper.setGravity(Gravity.END);
+                    menuHelper.show();
+                } else {
+                    PopupMenu popupMenu = new PopupMenu(context, v);
+                    popupMenu.getMenuInflater().inflate(R.menu.popup_menu_status_missed, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            if (item.getItemId() == R.id.itemDeleteNote) {
+                                ShowDialogDelete(dataItem, viewHolder.getAdapterPosition());
+                            }
+                            return true;
+                        }
+                    });
+                    @SuppressLint("RestrictedApi") MenuPopupHelper menuHelper = new MenuPopupHelper(context, (MenuBuilder) popupMenu.getMenu(), v);
+                    menuHelper.setForceShowIcon(true);
+                    menuHelper.setGravity(Gravity.END);
+                    menuHelper.show();
+                }
             }
         });
     }
