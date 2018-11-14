@@ -378,6 +378,7 @@ public class SetTimeFragment extends Fragment {
 
         docData.put(dataItem.getScheduleItems().get(0).getTimeStart(), nestedData);
 
+
         db.collection(idUser).document(dataItem.getDate())
                 .set(docData)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -393,6 +394,7 @@ public class SetTimeFragment extends Fragment {
                         ShowDialogStatus(R.layout.dialog_error_status, R.id.txtStatusError, R.string.status_error_write);
                     }
                 });
+
     }
 
     private void UpdateData(DataItem dataItem) {
