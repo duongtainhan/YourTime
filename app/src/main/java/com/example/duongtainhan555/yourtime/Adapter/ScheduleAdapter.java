@@ -361,7 +361,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_update, true);
+                        ShowDialogStatus(R.layout.dialog_error_status, R.id.txtStatusError, R.string.status_error_update, true);
                     }
                 });
     }
@@ -385,7 +385,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        ShowDialogStatus(R.layout.dialog_status, R.id.txtStatusError, R.string.status_error_delete, show);
+                        ShowDialogStatus(R.layout.dialog_error_status, R.id.txtStatusError, R.string.status_error_delete, show);
                     }
                 });
     }

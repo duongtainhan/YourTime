@@ -379,6 +379,7 @@ public class SetTimeFragment extends Fragment {
         docData.put(dataItem.getScheduleItems().get(0).getTimeStart(), nestedData);
 
 
+
         db.collection(idUser).document(dataItem.getDate())
                 .set(docData)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -434,10 +435,12 @@ public class SetTimeFragment extends Fragment {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         UpdateData(dataItem);
+                        //SetData(dataItem);
                         Log.d("EXISTS", "YES");
                     } else {
                         Log.d("EXISTS", "NO");
                         SetData(dataItem);
+                        //UpdateData(dataItem);
                     }
                 } else {
                     Log.d("CHECK", "get failed with ", task.getException());
