@@ -167,7 +167,7 @@ public class NotificationSchedule {
                     .setSound(alarmSound)
                     .setContentIntent(pendingIntent)
                     .setTicker(title)
-                    .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                    .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000});
         }
         else {
 
@@ -180,7 +180,7 @@ public class NotificationSchedule {
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
                     .setTicker(title)
-                    .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                    .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000})
                     .setPriority(Notification.PRIORITY_HIGH);
         }
 
